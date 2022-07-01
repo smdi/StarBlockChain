@@ -20,6 +20,7 @@ public class StarBlock {
     private String dataStoreImmutable;
     private int nonceUserValue;    
 
+    public StarBlock(){}
     public StarBlock(long horizontalIndex, long verticalIndex, long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, String horizontalNextHash_relatedTo,
             String verticalPreviousHash_unrelatedFrom, String verticalNextHash_unrelatedTo,
