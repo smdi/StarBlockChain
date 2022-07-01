@@ -1,9 +1,7 @@
 package com.aidev.starblockchain;
 
 public class StarBlock {
-
-    private long horizontalIndex;
-    private long verticalIndex;        
+            
     private long creationTimeStamp;
     private String currentHash;
     private String horizontalPreviousHash_relatedFrom;
@@ -15,20 +13,18 @@ public class StarBlock {
     private long latestVersionNumberRelated;
     private long defaultVersionNumberUnrelated;
     private long currentVersionNumberUnrelated;    
-    private long latestVersionNumberUnrelated;        
-    private long totalTensorNetworkStrength;    
+    private long latestVersionNumberUnrelated;                
     private String dataStoreImmutable;
     private int nonceUserValue;    
+    private String userName;
 
     public StarBlock(){}
-    public StarBlock(long horizontalIndex, long verticalIndex, long creationTimeStamp,
+    public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, String horizontalNextHash_relatedTo,
             String verticalPreviousHash_unrelatedFrom, String verticalNextHash_unrelatedTo,
             long defaultVersionNumberRelated, long currentVersionNumberRelated, long latestVersionNumberRelated,
             long defaultVersionNumberUnrelated, long currentVersionNumberUnrelated, long latestVersionNumberUnrelated,
-            long totalTensorNetworkStrength, String dataStoreImmutable, int nonceUserValue) {
-        setHorizontalIndex(horizontalIndex);
-        setVerticalIndex(verticalIndex);
+            String dataStoreImmutable, int nonceUserValue, String UserName) {        
         setCreationTimeStamp(creationTimeStamp);        
         setHorizontalPreviousHash_relatedFrom(horizontalPreviousHash_relatedFrom);
         setHorizontalNextHash_relatedTo(horizontalNextHash_relatedTo);
@@ -39,22 +35,10 @@ public class StarBlock {
         setLatestVersionNumberRelated(latestVersionNumberRelated);
         setDefaultVersionNumberUnrelated(defaultVersionNumberUnrelated);
         setCurrentVersionNumberUnrelated(currentVersionNumberUnrelated);
-        setLatestVersionNumberUnrelated(latestVersionNumberUnrelated);
-        setTotalTensorNetworkStrength(totalTensorNetworkStrength);
-        setDataStoreImmutable(dataStoreImmutable);        
-    }    
-    public long getHorizontalIndex() {
-        return horizontalIndex;
-    }
-    private void setHorizontalIndex(long horizontalIndex) {
-        this.horizontalIndex = horizontalIndex;
-    }
-    public long getVerticalIndex() {
-        return verticalIndex;
-    }
-    private void setVerticalIndex(long verticalIndex) {
-        this.verticalIndex = verticalIndex;
-    }
+        setLatestVersionNumberUnrelated(latestVersionNumberUnrelated);        
+        setDataStoreImmutable(dataStoreImmutable);
+        setUserName(userName);        
+    }        
     public long getCreationTimeStamp() {
         return creationTimeStamp;
     }
@@ -126,13 +110,7 @@ public class StarBlock {
     }
     protected void setLatestVersionNumberUnrelated(long latestVersionNumberUnrelated) {
         this.latestVersionNumberUnrelated = latestVersionNumberUnrelated;
-    }
-    public long getTotalTensorNetworkStrength() {
-        return totalTensorNetworkStrength;
-    }
-    protected void setTotalTensorNetworkStrength(long totalTensorNetworkStrength) {
-        this.totalTensorNetworkStrength = totalTensorNetworkStrength;
-    }
+    }    
     public String getDataStoreImmutable() {
         return dataStoreImmutable;
     }
@@ -144,6 +122,12 @@ public class StarBlock {
     }
     private void setNonceUserValue(int nonceUserValue) {
         this.nonceUserValue = nonceUserValue;
+    }
+    public String getUserName() {
+        return userName;
+    }
+    private void setUserName(String userName) {
+        this.userName = userName;
     }
     private String str(){
         return null;
