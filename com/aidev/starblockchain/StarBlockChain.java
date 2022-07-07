@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-public class StarBlockChain extends StarBlock{
+public class StarBlockChain {
     
     private List<String> userNames;
     private LinkedHashMap<Integer, ArrayList<StarBlock>> starBlocks 
@@ -16,6 +16,7 @@ public class StarBlockChain extends StarBlock{
     public StarBlockChain(List<String> userNames){
         setUserNames(userNames);        
     }
+    
     public List<String> getUserNames() {
         return userNames;
     }
