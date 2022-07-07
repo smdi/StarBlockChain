@@ -8,34 +8,22 @@ public class StarBlock {
     private String horizontalNextHash_relatedTo;
     private String verticalPreviousHash_unrelatedFrom;
     private String verticalNextHash_unrelatedTo;
-    private long defaultVersionNumberRelated;
-    private long currentVersionNumberRelated;    
-    private long latestVersionNumberRelated;
-    private long defaultVersionNumberUnrelated;
-    private long currentVersionNumberUnrelated;    
-    private long latestVersionNumberUnrelated;                
+    private long horizontalIndex;
+    private long verticalIndex;                  
     private String dataStoreImmutable;
-    private int nonceUserValue;    
+    private StringBuilder uniqueCodeforEachUserName;    
     private String userName;
 
     public StarBlock(){}
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, String horizontalNextHash_relatedTo,
             String verticalPreviousHash_unrelatedFrom, String verticalNextHash_unrelatedTo,
-            long defaultVersionNumberRelated, long currentVersionNumberRelated, long latestVersionNumberRelated,
-            long defaultVersionNumberUnrelated, long currentVersionNumberUnrelated, long latestVersionNumberUnrelated,
-            String dataStoreImmutable, int nonceUserValue, String UserName) {        
+            String dataStoreImmutable, String UserName) {        
         setCreationTimeStamp(creationTimeStamp);        
         setHorizontalPreviousHash_relatedFrom(horizontalPreviousHash_relatedFrom);
         setHorizontalNextHash_relatedTo(horizontalNextHash_relatedTo);
         setVerticalPreviousHash_unrelatedFrom(verticalPreviousHash_unrelatedFrom);
-        setVerticalNextHash_unrelatedTo(verticalNextHash_unrelatedTo);
-        setDefaultVersionNumberRelated(defaultVersionNumberRelated);
-        setCurrentVersionNumberRelated(currentVersionNumberRelated);
-        setLatestVersionNumberRelated(latestVersionNumberRelated);
-        setDefaultVersionNumberUnrelated(defaultVersionNumberUnrelated);
-        setCurrentVersionNumberUnrelated(currentVersionNumberUnrelated);
-        setLatestVersionNumberUnrelated(latestVersionNumberUnrelated);        
+        setVerticalNextHash_unrelatedTo(verticalNextHash_unrelatedTo);      
         setDataStoreImmutable(dataStoreImmutable);
         setUserName(userName);        
     }        
@@ -75,65 +63,37 @@ public class StarBlock {
     private void setVerticalNextHash_unrelatedTo(String verticalNextHash_unrelatedTo) {
         this.verticalNextHash_unrelatedTo = verticalNextHash_unrelatedTo;
     }
-    public long getDefaultVersionNumberRelated() {
-        return defaultVersionNumberRelated;
-    }
-    private void setDefaultVersionNumberRelated(long defaultVersionNumberRelated) {
-        this.defaultVersionNumberRelated = defaultVersionNumberRelated;
-    }
-    public long getCurrentVersionNumberRelated() {
-        return currentVersionNumberRelated;
-    }
-    private void setCurrentVersionNumberRelated(long currentVersionNumberRelated) {
-        this.currentVersionNumberRelated = currentVersionNumberRelated;
-    }
-    public long getLatestVersionNumberRelated() {
-        return latestVersionNumberRelated;
-    }
-    protected void setLatestVersionNumberRelated(long latestVersionNumberRelated) {
-        this.latestVersionNumberRelated = latestVersionNumberRelated;
-    }
-    public long getDefaultVersionNumberUnrelated() {
-        return defaultVersionNumberUnrelated;
-    }
-    private void setDefaultVersionNumberUnrelated(long defaultVersionNumberUnrelated) {
-        this.defaultVersionNumberUnrelated = defaultVersionNumberUnrelated;
-    }
-    public long getCurrentVersionNumberUnrelated() {
-        return currentVersionNumberUnrelated;
-    }
-    private void setCurrentVersionNumberUnrelated(long currentVersionNumberUnrelated) {
-        this.currentVersionNumberUnrelated = currentVersionNumberUnrelated;
-    }
-    public long getLatestVersionNumberUnrelated() {
-        return latestVersionNumberUnrelated;
-    }
-    protected void setLatestVersionNumberUnrelated(long latestVersionNumberUnrelated) {
-        this.latestVersionNumberUnrelated = latestVersionNumberUnrelated;
-    }    
     public String getDataStoreImmutable() {
         return dataStoreImmutable;
     }
     private void setDataStoreImmutable(String dataStoreImmutable) {
         this.dataStoreImmutable = dataStoreImmutable;
-    }
-    private int getNonceUserValue() {
-        return nonceUserValue;
-    }
-    private void setNonceUserValue(int nonceUserValue) {
-        this.nonceUserValue = nonceUserValue;
-    }
+    }       
     public String getUserName() {
         return userName;
-    }
+    }    
     private void setUserName(String userName) {
         this.userName = userName;
     }
+    private StringBuilder calculateUniqueCodeforEachUserName(String userName){ 
+        uniqueCodeforEachUserName = new StringBuilder();       
+        byte[] byteArrray = userName.getBytes();
+        uniqueCodeforEachUserName.append(byteArrray);        
+        return uniqueCodeforEachUserName;
+    }
     private String str(){
-        return null;
+        return (""+horizontalIndex) + (""+verticalIndex) + (""+creationTimeStamp) + 
+                dataStoreImmutable + calculateUniqueCodeforEachUserName(userName).toString();
     }
     public String toString(){
-        return null;
+        String starBlockInfo = String.format(
+                                "STARBLOCK %1$s%2$s \ndata %3$s \nuserName %4$s \ncreationTimeStamp %5$s \n"+
+                                "verticalPreviousHash %6$s \nhorizontalPreviousHash %7$s \n" +
+                                "currentHash %8$s \nhorizontalNextHash %9$s \nverticalNextHash %10$s",
+                                horizontalIndex, verticalIndex, dataStoreImmutable, userName, creationTimeStamp, 
+                                verticalPreviousHash_unrelatedFrom,horizontalPreviousHash_relatedFrom, 
+                                currentHash, horizontalNextHash_relatedTo, verticalNextHash_unrelatedTo);        
+        return starBlockInfo;
     }
     protected static String calculateCurrentHash(StarBlock starBlock){
         return null;
