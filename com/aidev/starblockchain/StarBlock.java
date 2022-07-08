@@ -16,6 +16,7 @@ public class StarBlock {
     private StringBuilder uniqueCodeforEachUserName;    
     private String userName;
     
+    public StarBlock(){}
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, 
             String verticalPreviousHash_unrelatedFrom,
@@ -98,26 +99,28 @@ public class StarBlock {
             horizontalIndex, verticalIndex);                                        
         return starBlockInfo;
     }
-    private static String calculateCurrentHash(StarBlock starBlock){
+    protected static String calculateCurrentHash(StarBlock starBlock){
         String hash = null;
         try {
             MessageDigest instanceSHA256 = MessageDigest.getInstance("SHA-256");
-            String textUniquetoBlock = starBlock.str();
+            String textUniquetoBlock = starBlock.str();            
             byte hashBytes[] = instanceSHA256.digest(textUniquetoBlock.getBytes());
             StringBuilder generatedHash = new StringBuilder();
             for (byte b : hashBytes) {
                 generatedHash.append(String.format("%02X", b));
             }
-            hash = generatedHash.toString();
+            hash = generatedHash.toString();            
         } catch (NoSuchAlgorithmException e) {            
             e.printStackTrace();
         }  
         return hash;
     }    
     private String mineUniqueCodeforEachUserName(String userName){ 
-        uniqueCodeforEachUserName = new StringBuilder();             
+        uniqueCodeforEachUserName = new StringBuilder();                   
         byte[] byteArrray = userName.getBytes();
-        uniqueCodeforEachUserName.append(byteArrray);        
+        for(byte each: byteArrray){
+            uniqueCodeforEachUserName.append(each);
+        }                
         return uniqueCodeforEachUserName.toString();
     } 
     

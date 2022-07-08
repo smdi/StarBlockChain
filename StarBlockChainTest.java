@@ -28,7 +28,7 @@ public class StarBlockChainTest{
         starBlockChain.newStarBlock("Music Notes v4", true, false, 1);
 
         System.out.println(starBlockChain);        
-
+        System.out.println("Is StarBlockChain Valid? "+starBlockChain.isStarBlockChainValid());
     }
 
 }

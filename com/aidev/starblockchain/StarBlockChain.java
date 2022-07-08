@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-public class StarBlockChain {
+public class StarBlockChain extends StarBlock{
     
     private List<String> userNames;
     private LinkedHashMap<Long, ArrayList<StarBlock>> starBlocks;
     private LinkedHashMap<Long, Long> versionCount;
     private long totalTensorNetworkStrength = 0;
     private long index = 0;
+    private ArrayList<StarBlock> verticalStarBlocks;
 
     public StarBlockChain(List<String> userNames){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
@@ -115,6 +116,94 @@ public class StarBlockChain {
             blockChainInfo.append("\n");
         }
         return blockChainInfo.toString();
+    }
+    private boolean checkCodeforFirstStarBlockValidity(StarBlock firstBlock, long index, 
+                                                String relatedHash, String currentHash){
+        if (index != 0)return false;        
+        if (relatedHash != null)return false;                            
+        if (currentHash == null || 
+              !StarBlock.calculateCurrentHash(firstBlock).equals(currentHash))return false;                                             
+        return true;
+    }
+    private boolean isFirstStarBlockValid(StarBlock firstBlock, boolean isHorizontal) {        
+        boolean result = false;                
+        if(isHorizontal){
+            verticalStarBlocks.add(firstBlock);
+            result = checkCodeforFirstStarBlockValidity(firstBlock, firstBlock.getVerticalIndex(), 
+            firstBlock.getHorizontalPreviousHash_relatedFrom(), firstBlock.getCurrentHash());
+        }else{
+            result = checkCodeforFirstStarBlockValidity(firstBlock, firstBlock.getVerticalIndex(), 
+            firstBlock.getVerticalPreviousHash_unrelatedFrom(), firstBlock.getCurrentHash());
+        }          
+        return result;
+    }
+    private boolean checkCodeforNewStarBlockValidity(StarBlock newBlock, StarBlock previousBlock,
+                                                    long prevIndex, long newIndex, 
+                                                    String newBlockPrevHash, String prevBlockCurrHash,
+                                                    String newBlockcurrHash){
+        if (newBlock != null  &&  previousBlock != null) {            
+            if (prevIndex + 1 != newIndex) {
+              return false;
+            }            
+            if (newBlockPrevHash == null  ||  
+              !newBlockPrevHash.equals(prevBlockCurrHash)) {
+              return false;
+            }            
+            if (newBlockcurrHash == null  ||  
+              !StarBlock.calculateCurrentHash(newBlock).equals(newBlockcurrHash)) {
+              return false;
+            }            
+            return true;
+        }        
+        return false;
+    }
+    private boolean isValidNewStarBlock(StarBlock newBlock, StarBlock previousBlock, boolean isHorizontal) {
+        boolean result = false;
+        if(isHorizontal){
+            result = checkCodeforNewStarBlockValidity(newBlock, previousBlock, previousBlock.getVerticalIndex(),
+                                newBlock.getVerticalIndex(), newBlock.getHorizontalPreviousHash_relatedFrom(),
+                                previousBlock.getCurrentHash(),
+                                newBlock.getCurrentHash());
+        }else{
+            result = checkCodeforNewStarBlockValidity(newBlock, previousBlock, previousBlock.getHorizontalIndex(),
+                                newBlock.getHorizontalIndex(), newBlock.getVerticalPreviousHash_unrelatedFrom(),
+                                previousBlock.getCurrentHash(),
+                                newBlock.getCurrentHash());
+        }            
+        return result;
+    }
+    public boolean isStarBlockChainValid(){
+        boolean result = false;
+        long totalVerticalStrength = Long.valueOf(versionCount.size());
+        verticalStarBlocks = new ArrayList<>();
+        Loop:        
+        for(long i=0; i<totalVerticalStrength; i++ ){
+            long totalHorizontalStrengthAtIndex = versionCount.get(i);            
+            ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
+            for(int j=0; j<totalHorizontalStrengthAtIndex; j++){                
+                if(j != 0){
+                    StarBlock currentBlock = horizontalStarBlockAtIndex.get(j);
+                    StarBlock previousBlock = horizontalStarBlockAtIndex.get(j - 1);
+                    result = isValidNewStarBlock(currentBlock, previousBlock, true);                     
+                }else{
+                    result = isFirstStarBlockValid(horizontalStarBlockAtIndex.get(j), true);                                        
+                }
+                if(result == false){break Loop;};
+            }            
+        }
+        if(result == true){            
+            for(int i=0; i<verticalStarBlocks.size(); i++ ){                
+                if(i != 0){
+                    StarBlock currentBlock = verticalStarBlocks.get(i);
+                    StarBlock previousBlock = verticalStarBlocks.get(i - 1);
+                    result = isValidNewStarBlock(currentBlock, previousBlock, false);
+                }else{
+                    result = isFirstStarBlockValid(verticalStarBlocks.get(i), false);
+                }
+                if(result == false){break;};
+            }
+        }        
+        return result;
     }
     
 }
