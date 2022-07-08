@@ -1,5 +1,7 @@
-# StarBlockChain
+# STAR✨ BlockChain⛓
  
+### [License](http://www.apache.org/licenses/LICENSE-2.0)
+
 ```
 Copyright 2022 Mohammad Imran Shaik
 
