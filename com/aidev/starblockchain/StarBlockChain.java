@@ -13,11 +13,15 @@ public class StarBlockChain extends StarBlock{
     private long totalTensorNetworkStrength = 0;
     private long index = 0;
     private ArrayList<StarBlock> verticalStarBlocks;
+    private boolean RELATED_FALSE = false;
 
     public StarBlockChain(List<String> userNames){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
         versionCount = new LinkedHashMap<Long, Long>();
         setUserNames(userNames);
+    }
+    public void newStarBlock(String data){
+        getNewStarBlockLogic(data, RELATED_FALSE, true, -1);
     }
     public void newStarBlock(String data, boolean related){
         getNewStarBlockLogic(data, related, true, -1);
