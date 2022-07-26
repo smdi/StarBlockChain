@@ -15,7 +15,8 @@ public class StarBlock {
     private String dataStoreImmutable;
     private StringBuilder uniqueCodeforEachUserName;    
     private String userName;
-    
+    private static String HASHING_ALGORITHM = "SHA-256";
+
     public StarBlock(){}
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, 
@@ -102,7 +103,7 @@ public class StarBlock {
     protected static String calculateCurrentHash(StarBlock starBlock){
         String hash = null;
         try {
-            MessageDigest instanceSHA256 = MessageDigest.getInstance("SHA-256");
+            MessageDigest instanceSHA256 = MessageDigest.getInstance(HASHING_ALGORITHM);
             String textUniquetoBlock = starBlock.str();            
             byte hashBytes[] = instanceSHA256.digest(textUniquetoBlock.getBytes());
             StringBuilder generatedHash = new StringBuilder();
