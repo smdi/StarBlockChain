@@ -21,64 +21,41 @@ public class StarBlock {
             String horizontalPreviousHash_relatedFrom, 
             String verticalPreviousHash_unrelatedFrom,
             String dataStoreImmutable, String userName, long horizontalIndex, long verticalIndex) {        
-        setCreationTimeStamp(creationTimeStamp);        
-        setHorizontalPreviousHash_relatedFrom(horizontalPreviousHash_relatedFrom);        
-        setVerticalPreviousHash_unrelatedFrom(verticalPreviousHash_unrelatedFrom);         
-        setDataStoreImmutable(dataStoreImmutable);
-        setUserName(userName);
-        setHorizontalIndex(horizontalIndex);
-        setVerticalIndex(verticalIndex);
-        setCurrentHash(StarBlock.calculateCurrentHash(this));        
+        
+        this.creationTimeStamp = creationTimeStamp;        
+        this.horizontalPreviousHash_relatedFrom = horizontalPreviousHash_relatedFrom;        
+        this.verticalPreviousHash_unrelatedFrom = verticalPreviousHash_unrelatedFrom;         
+        this.dataStoreImmutable = dataStoreImmutable;
+        this.userName = userName;
+        this.horizontalIndex = horizontalIndex;
+        this.verticalIndex = verticalIndex;
+        this.currentHash = StarBlock.calculateCurrentHash(this);                
     }  
 
     public long getCreationTimeStamp() {
         return creationTimeStamp;
-    }
-    private void setCreationTimeStamp(long creationTimeStamp) {
-        this.creationTimeStamp = creationTimeStamp;
-    }
+    }    
     public String getCurrentHash() {
         return currentHash;
-    }
-    private void setCurrentHash(String currentHash) {
-        this.currentHash = currentHash;
-    }
+    }    
     public long getVerticalIndex() {
         return verticalIndex;
-    }
-    private void setVerticalIndex(long verticalIndex) {
-        this.verticalIndex = verticalIndex;
-    }
+    }   
     public long getHorizontalIndex() {
         return horizontalIndex;
-    }
-    private void setHorizontalIndex(long horizontalIndex) {
-        this.horizontalIndex = horizontalIndex;
-    }
+    }   
     public String getHorizontalPreviousHash_relatedFrom() {
         return horizontalPreviousHash_relatedFrom;
-    }
-    private void setHorizontalPreviousHash_relatedFrom(String horizontalPreviousHash_relatedFrom) {
-        this.horizontalPreviousHash_relatedFrom = horizontalPreviousHash_relatedFrom;
-    }        
+    }            
     public String getVerticalPreviousHash_unrelatedFrom() {
         return verticalPreviousHash_unrelatedFrom;
-    }
-    private void setVerticalPreviousHash_unrelatedFrom(String verticalPreviousHash_unrelatedFrom) {
-        this.verticalPreviousHash_unrelatedFrom = verticalPreviousHash_unrelatedFrom;
-    }    
+    }       
     public String getDataStoreImmutable() {
         return dataStoreImmutable;
-    }
-    private void setDataStoreImmutable(String dataStoreImmutable) {
-        this.dataStoreImmutable = dataStoreImmutable;
-    }       
+    }          
     public String getUserName() {
         return userName;
-    }    
-    private void setUserName(String userName) {
-        this.userName = userName;
-    }    
+    }       
     private String str(){
         return (""+horizontalIndex) + (""+verticalIndex) + (""+creationTimeStamp) + 
                 dataStoreImmutable + mineUniqueCodeforEachUserName(this.userName);
