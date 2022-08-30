@@ -11,23 +11,23 @@ public class StarBlockChainTest{
         
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
         StarBlockChain starBlockChain = new StarBlockChain(userNames);
-        starBlockChain.newStarBlock("Confidential data v1");
-        starBlockChain.newStarBlock("Confidential data v2", true);        
+        // starBlockChain.newStarBlock("Confidential data v1");
+        // starBlockChain.newStarBlock("Confidential data v2", true);        
 
-        starBlockChain.newStarBlock("Music Notes v1");
-        starBlockChain.newStarBlock("Music Notes v2", true);
-        starBlockChain.newStarBlock("Music Notes v3", true);
+        // starBlockChain.newStarBlock("Music Notes v1");
+        // starBlockChain.newStarBlock("Music Notes v2", true);
+        // starBlockChain.newStarBlock("Music Notes v3", true);
 
-        starBlockChain.newStarBlock("Confidential data v3", true, false, 0);
+        // starBlockChain.newStarBlock("Confidential data v3", true, false, 0);
 
-        starBlockChain.newStarBlock("Music Notes v4", true);
+        // starBlockChain.newStarBlock("Music Notes v4", true);
 
-        starBlockChain.newStarBlock("Home Loan v1");
-        starBlockChain.newStarBlock("Home Loan v2", true);
+        // starBlockChain.newStarBlock("Home Loan v1");
+        // starBlockChain.newStarBlock("Home Loan v2", true);
         
-        for(int i=0; i<1000; i++){
-            starBlockChain.newStarBlock("Home Loan v"+(3+i), true);
-        }
+        // for(int i=0; i<1573; i++){
+        //     starBlockChain.newStarBlock("Home Loan v"+(3+i), true);
+        // }
         
         // starBlockChain.newStarBlock("Confidential data v4", true, false, 0);
         
@@ -36,13 +36,18 @@ public class StarBlockChainTest{
         // }
 
         //starblock chain without versioning
-        // for(int i=0; i<1570; i++){
-        //     starBlockChain.newStarBlock("Data v"+i);
-        // }
+        for(int i=0; i<1570; i++){
+            starBlockChain.newStarBlock("Data v"+i);
+        }
 
         // System.out.println(starBlockChain);
-        boolean isValid = starBlockChain.isStarBlockChainValid();
-        System.out.println("Is StarBlockChain Valid? "+isValid);
+        try{
+            boolean isValid = starBlockChain.isStarBlockChainValid();
+            System.out.println("Is StarBlockChain Valid? "+isValid);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+                
         long endTime   = System.nanoTime();  
         double duration = (double)(endTime - startTime)/1000000000;      
         System.out.println(duration);                
