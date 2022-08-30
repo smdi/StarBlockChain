@@ -12,8 +12,10 @@ public class StarBlockChain extends StarBlock{
     private LinkedHashMap<Long, Long> versionCount;
     private long totalTensorNetworkStrength = 0;
     private long index = 0;
-    private ArrayList<StarBlock> verticalStarBlocks;
+    // private ArrayList<StarBlock> verticalStarBlocks;
     private boolean RELATED_FALSE = false;
+    private boolean isVersioned = false;
+    private int threadsPerNBlocksNumber = 500;
 
     public StarBlockChain(List<String> userNames){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
@@ -46,6 +48,7 @@ public class StarBlockChain extends StarBlock{
     }
     private void getNewStarBlockAtIndex(long index, String data, boolean addNewRelated, boolean fetchHorizontalPreviousIndex) {        
         if(addNewRelated){
+            if(!isVersioned){ isVersioned = true;}
             ArrayList<StarBlock> indexedStarblocks = starBlocks.get(index);
             long horizontalIndex = this.index; long verticalIndex = Long.valueOf(indexedStarblocks.size());            
             if(fetchHorizontalPreviousIndex){
@@ -110,7 +113,7 @@ public class StarBlockChain extends StarBlock{
     }
     public String toString(){
         StringBuilder blockChainInfo = new StringBuilder();
-        long totalVerticalStrength = Long.valueOf(versionCount.size());        
+        long totalVerticalStrength = Long.valueOf(versionCount.size());                
         for(long i=0; i<totalVerticalStrength; i++ ){
             long totalHorizontalStrengthAtIndex = versionCount.get(i);            
             ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
@@ -132,7 +135,7 @@ public class StarBlockChain extends StarBlock{
     private boolean isFirstStarBlockValid(StarBlock firstBlock, boolean isHorizontal) {        
         boolean result = false;                
         if(isHorizontal){
-            verticalStarBlocks.add(firstBlock);
+            // verticalStarBlocks.add(firstBlock);
             result = checkCodeforFirstStarBlockValidity(firstBlock, firstBlock.getVerticalIndex(), 
             firstBlock.getHorizontalPreviousHash_relatedFrom(), firstBlock.getCurrentHash());
         }else{
@@ -176,37 +179,123 @@ public class StarBlockChain extends StarBlock{
         }            
         return result;
     }
+    private long threadEstimator(long totalVerticalStrength){
+        long result = totalVerticalStrength/threadsPerNBlocksNumber;
+        return result;
+    }
+    private class StarBlockChainThreadPool implements Runnable{
+        private volatile boolean result = false;
+        private volatile boolean resultVertical = false;
+        private volatile boolean resultHorizontal = false;
+        private long valueOfVerticalIndexToStart = 0;
+        private long valueOfVerticalIndexToStop = 0;        
+        StarBlockChainThreadPool( long valueOfVerticalIndexToStart, 
+                        long valueOfVerticalIndexToStop){
+            this.valueOfVerticalIndexToStart = valueOfVerticalIndexToStart;
+            this.valueOfVerticalIndexToStop = valueOfVerticalIndexToStop;            
+        }
+        @Override
+        public void run() {
+            for(long i=valueOfVerticalIndexToStart; i<valueOfVerticalIndexToStop; i++ ){
+                long totalHorizontalStrengthAtIndex = versionCount.get(i);            
+                ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
+                if(isVersioned){
+                    for(int j=0; j<totalHorizontalStrengthAtIndex; j++){                
+                        if(j > 0){
+                            StarBlock currentBlock = horizontalStarBlockAtIndex.get(j);
+                            StarBlock previousBlock = horizontalStarBlockAtIndex.get(j - 1);
+                            resultHorizontal = isValidNewStarBlock(currentBlock, previousBlock, true);                     
+                        }else{
+                            resultHorizontal = isFirstStarBlockValid(horizontalStarBlockAtIndex.get(j), true);                                        
+                        }                        
+                    }
+                }
+                if(i > 0){
+                    StarBlock currentBlock = starBlocks.get(i).get(0);
+                    StarBlock previousBlock = starBlocks.get(i - 1).get(0);
+                    resultVertical = isValidNewStarBlock(currentBlock, previousBlock, false);
+                }else{
+                    resultVertical = isFirstStarBlockValid(starBlocks.get(i).get(0), false);
+                }
+                if(isVersioned)result = resultVertical && resultHorizontal;
+                else result = resultVertical;
+                if(!(result)){break;}                            
+            }
+        }
+        public boolean finalResult(){
+            return result;
+        }
+    }
+    private boolean callStarBlockChainThreadPool(long valueOfVerticalIndexToStart, 
+                                                        long valueOfVerticalIndexToStop){        
+        
+        boolean result = false;
+        try {
+            StarBlockChainThreadPool StarBlockChainThreadPool = new StarBlockChainThreadPool(valueOfVerticalIndexToStart, valueOfVerticalIndexToStop);
+            Thread thread = new Thread(StarBlockChainThreadPool);
+            thread.start();
+            thread.join();
+            result = StarBlockChainThreadPool.finalResult();
+        
+        } catch (InterruptedException e) {            
+            e.printStackTrace();
+        }
+        return result;
+    }
     public boolean isStarBlockChainValid(){
         boolean result = false;
         long totalVerticalStrength = Long.valueOf(versionCount.size());
-        verticalStarBlocks = new ArrayList<>();
-        Loop:        
-        for(long i=0; i<totalVerticalStrength; i++ ){
-            long totalHorizontalStrengthAtIndex = versionCount.get(i);            
-            ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
-            for(int j=0; j<totalHorizontalStrengthAtIndex; j++){                
-                if(j != 0){
-                    StarBlock currentBlock = horizontalStarBlockAtIndex.get(j);
-                    StarBlock previousBlock = horizontalStarBlockAtIndex.get(j - 1);
-                    result = isValidNewStarBlock(currentBlock, previousBlock, true);                     
-                }else{
-                    result = isFirstStarBlockValid(horizontalStarBlockAtIndex.get(j), true);                                        
+        // verticalStarBlocks = new ArrayList<>();
+        long threadEstimatorValue = threadEstimator(totalVerticalStrength);        
+        long valueOfVerticalIndexToStart = 0; long valueOfVerticalIndexToStop = 0;
+        // if(isVersioned){            
+            if(threadEstimatorValue == 0){
+                valueOfVerticalIndexToStart = 0; 
+                valueOfVerticalIndexToStop = totalVerticalStrength;
+                result = callStarBlockChainThreadPool(valueOfVerticalIndexToStart, valueOfVerticalIndexToStop);
+            }else if(threadEstimatorValue > 0){
+                long threads = 0;
+                do{
+                    valueOfVerticalIndexToStart = valueOfVerticalIndexToStop;
+                    valueOfVerticalIndexToStop = valueOfVerticalIndexToStop + threadsPerNBlocksNumber;                    
+                    result = callStarBlockChainThreadPool(valueOfVerticalIndexToStart, valueOfVerticalIndexToStop);                
+                    if(!result){break;}
+                    threads++;  
+                }while(threads< threadEstimatorValue);
+                if(result){
+                    long leftOutBlocks = totalVerticalStrength - threadsPerNBlocksNumber * threadEstimatorValue;
+                    if(leftOutBlocks > 0){
+                        valueOfVerticalIndexToStart = valueOfVerticalIndexToStop;
+                        valueOfVerticalIndexToStop = valueOfVerticalIndexToStop + leftOutBlocks;                        
+                        result = callStarBlockChainThreadPool(valueOfVerticalIndexToStart, valueOfVerticalIndexToStop);
+                    }
                 }
-                if(result == false){break Loop;};
-            }            
-        }
-        if(result == true){            
-            for(int i=0; i<verticalStarBlocks.size(); i++ ){                
-                if(i != 0){
-                    StarBlock currentBlock = verticalStarBlocks.get(i);
-                    StarBlock previousBlock = verticalStarBlocks.get(i - 1);
-                    result = isValidNewStarBlock(currentBlock, previousBlock, false);
-                }else{
-                    result = isFirstStarBlockValid(verticalStarBlocks.get(i), false);
-                }
-                if(result == false){break;};
             }
-        }        
+        // }else{            
+        //     for(long i=0; i<totalVerticalStrength; i++ ){                
+        //         if(i != 0){
+        //             StarBlock currentBlock = starBlocks.get(i).get(0);
+        //             StarBlock previousBlock = starBlocks.get(i - 1).get(0);
+        //             result = isValidNewStarBlock(currentBlock, previousBlock, false);
+        //         }else{
+        //             result = isFirstStarBlockValid(starBlocks.get(i).get(0), false);
+        //         }
+        //         if(result == false){break;};
+        //     }
+        //     return result;
+        // }        
+        // if(result == true){                        
+        //     for(int i=0; i<verticalStarBlocks.size(); i++ ){                
+        //         if(i != 0){
+        //             StarBlock currentBlock = verticalStarBlocks.get(i);
+        //             StarBlock previousBlock = verticalStarBlocks.get(i - 1);
+        //             result = isValidNewStarBlock(currentBlock, previousBlock, false);
+        //         }else{
+        //             result = isFirstStarBlockValid(verticalStarBlocks.get(i), false);
+        //         }
+        //         if(result == false){break;};
+        //     }
+        // }        
         return result;
     }
     

@@ -36,8 +36,8 @@ public class StarBlockChainTest{
         // }
 
         //starblock chain without versioning
-        for(int i=0; i<200; i++){
-            starBlockChain.newStarBlock("Confidential data v"+i);
+        for(int i=0; i<1570; i++){
+            starBlockChain.newStarBlock("Data v"+i);
         }
 
         System.out.println(starBlockChain);
