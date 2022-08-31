@@ -1,9 +1,11 @@
 package com.aidev.starblockchain;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.concurrent.*;
 
 public class StarBlockChain extends StarBlock{
     
@@ -11,9 +13,12 @@ public class StarBlockChain extends StarBlock{
     private LinkedHashMap<Long, ArrayList<StarBlock>> starBlocks;
     private LinkedHashMap<Long, Long> versionCount;
     private long totalTensorNetworkStrength = 0;
-    private long index = 0;
-    private ArrayList<StarBlock> verticalStarBlocks;
-    private boolean RELATED_FALSE = false;
+    private long index = 0;    
+    private boolean RELATED_FALSE = false;    
+    private int THREADS_PER_N_BLOCKS = 500;
+    private int MIN_THREADS_PARALLEL_EXECUTION = 5;
+    private int MED_THREADS_PARALLEL_EXECUTION = 10;
+    private int MAX_THREADS_PARALLEL_EXECUTION = 20;
 
     public StarBlockChain(List<String> userNames){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
@@ -45,7 +50,7 @@ public class StarBlockChain extends StarBlock{
         setTotalTensorNetworkStrength(++totalTensorNetworkStrength);
     }
     private void getNewStarBlockAtIndex(long index, String data, boolean addNewRelated, boolean fetchHorizontalPreviousIndex) {        
-        if(addNewRelated){
+        if(addNewRelated){            
             ArrayList<StarBlock> indexedStarblocks = starBlocks.get(index);
             long horizontalIndex = this.index; long verticalIndex = Long.valueOf(indexedStarblocks.size());            
             if(fetchHorizontalPreviousIndex){
@@ -110,7 +115,7 @@ public class StarBlockChain extends StarBlock{
     }
     public String toString(){
         StringBuilder blockChainInfo = new StringBuilder();
-        long totalVerticalStrength = Long.valueOf(versionCount.size());        
+        long totalVerticalStrength = Long.valueOf(versionCount.size());                
         for(long i=0; i<totalVerticalStrength; i++ ){
             long totalHorizontalStrengthAtIndex = versionCount.get(i);            
             ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
@@ -131,8 +136,7 @@ public class StarBlockChain extends StarBlock{
     }
     private boolean isFirstStarBlockValid(StarBlock firstBlock, boolean isHorizontal) {        
         boolean result = false;                
-        if(isHorizontal){
-            verticalStarBlocks.add(firstBlock);
+        if(isHorizontal){            
             result = checkCodeforFirstStarBlockValidity(firstBlock, firstBlock.getVerticalIndex(), 
             firstBlock.getHorizontalPreviousHash_relatedFrom(), firstBlock.getCurrentHash());
         }else{
@@ -176,38 +180,138 @@ public class StarBlockChain extends StarBlock{
         }            
         return result;
     }
-    public boolean isStarBlockChainValid(){
-        boolean result = false;
-        long totalVerticalStrength = Long.valueOf(versionCount.size());
-        verticalStarBlocks = new ArrayList<>();
-        Loop:        
-        for(long i=0; i<totalVerticalStrength; i++ ){
-            long totalHorizontalStrengthAtIndex = versionCount.get(i);            
-            ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
-            for(int j=0; j<totalHorizontalStrengthAtIndex; j++){                
-                if(j != 0){
+    private long threadEstimator(long totalStrength){
+        long result = totalStrength/THREADS_PER_N_BLOCKS;        
+        return result;
+    }
+    private int threads(long threadEstimatorValue){
+        int nThreads = (threadEstimatorValue <= 20)? 
+                        (threadEstimatorValue <= 10? MIN_THREADS_PARALLEL_EXECUTION : MED_THREADS_PARALLEL_EXECUTION)
+                        : MAX_THREADS_PARALLEL_EXECUTION;
+        return nThreads;
+    }
+    private class StarBlockChainHorizontalThreadPool implements Callable<Boolean>{
+        private volatile boolean result = false;                
+        private int valueOfHorizontalIndexToStart = 0;
+        private int valueOfHorizontalIndexToStop = 0;
+        ArrayList<StarBlock> horizontalStarBlockAtIndex;        
+        StarBlockChainHorizontalThreadPool(int valueOfHorizontalIndexToStart, 
+                        int valueOfHorizontalIndexToStop, ArrayList<StarBlock> horizontalStarBlockAtIndex){
+            this.valueOfHorizontalIndexToStart = valueOfHorizontalIndexToStart;
+            this.valueOfHorizontalIndexToStop = valueOfHorizontalIndexToStop;
+            this.horizontalStarBlockAtIndex = horizontalStarBlockAtIndex;            
+        }                
+        @Override
+        public Boolean call() throws Exception{
+            
+            for(int j=valueOfHorizontalIndexToStart; j<valueOfHorizontalIndexToStop; j++){                
+                if(j > 0){
                     StarBlock currentBlock = horizontalStarBlockAtIndex.get(j);
                     StarBlock previousBlock = horizontalStarBlockAtIndex.get(j - 1);
                     result = isValidNewStarBlock(currentBlock, previousBlock, true);                     
                 }else{
                     result = isFirstStarBlockValid(horizontalStarBlockAtIndex.get(j), true);                                        
                 }
-                if(result == false){break Loop;};
-            }            
+                if(!(result)){break;}                        
+            }                                                                
+            return result;
         }
-        if(result == true){            
-            for(int i=0; i<verticalStarBlocks.size(); i++ ){                
-                if(i != 0){
-                    StarBlock currentBlock = verticalStarBlocks.get(i);
-                    StarBlock previousBlock = verticalStarBlocks.get(i - 1);
-                    result = isValidNewStarBlock(currentBlock, previousBlock, false);
-                }else{
-                    result = isFirstStarBlockValid(verticalStarBlocks.get(i), false);
-                }
-                if(result == false){break;};
-            }
-        }        
-        return result;
     }
-    
+    private class StarBlockChainVerticalThreadPool implements Callable<Boolean>{
+        private volatile boolean result = false;
+        private volatile boolean resultVertical = false;
+        private volatile boolean resultHorizontal = false;
+        private long valueOfVerticalIndexToStart = 0;
+        private long valueOfVerticalIndexToStop = 0;        
+        StarBlockChainVerticalThreadPool(long valueOfVerticalIndexToStart, 
+                        long valueOfVerticalIndexToStop){
+            this.valueOfVerticalIndexToStart = valueOfVerticalIndexToStart;
+            this.valueOfVerticalIndexToStop = valueOfVerticalIndexToStop;            
+        }                
+        @Override
+        public Boolean call() throws Exception{
+            for(long i=valueOfVerticalIndexToStart; i<valueOfVerticalIndexToStop; i++ ){
+                long totalHorizontalStrengthAtIndex = versionCount.get(i);            
+                ArrayList<StarBlock> horizontalStarBlockAtIndex = starBlocks.get(i);
+                long threadEstimatorValue = threadEstimator(totalHorizontalStrengthAtIndex);
+                ExecutorService executorService = Executors.newFixedThreadPool(threads(threadEstimatorValue));                
+                if(totalHorizontalStrengthAtIndex > 1){                                                                               
+                    resultHorizontal = loopChainVerification(threadEstimatorValue, totalHorizontalStrengthAtIndex, executorService, horizontalStarBlockAtIndex);                    
+                    executorService.shutdownNow();                    
+                }
+                if(i > 0){
+                    StarBlock currentBlock = starBlocks.get(i).get(0);
+                    StarBlock previousBlock = starBlocks.get(i - 1).get(0);
+                    resultVertical = isValidNewStarBlock(currentBlock, previousBlock, false);
+                }else{
+                    resultVertical = isFirstStarBlockValid(starBlocks.get(i).get(0), false);
+                }
+                if(totalHorizontalStrengthAtIndex > 1)result = resultVertical && resultHorizontal;
+                else result = resultVertical;
+                if(!(result)){break;}                            
+            }
+            return result;
+        }
+    }
+    private boolean loopChainVerification(long threadEstimatorValue, long totalStrength, ExecutorService executorService, ArrayList<StarBlock> horizontalStarBlockAtIndex)throws Exception{
+        boolean result = false;
+        long valueStart = 0, valueStop = 0;        
+        if(threadEstimatorValue == 0){                        
+            valueStart = 0; 
+            valueStop = totalStrength; 
+            Future<Boolean> futureResult;
+            if(horizontalStarBlockAtIndex == null){
+                futureResult = executorService.submit(new StarBlockChainVerticalThreadPool(valueStart, valueStop));
+            }else{
+                futureResult = executorService.submit(new StarBlockChainHorizontalThreadPool((int)valueStart, (int)valueStop, horizontalStarBlockAtIndex));
+            }
+            
+            while(!futureResult.isDone()){ 
+                // System.out.println("looping");
+            }//stop while loop after x time
+            if(futureResult.isDone())result = futureResult.get();
+        }else if(threadEstimatorValue > 0){                        
+            long threads = 0;            
+            List<Future<Boolean>> listOfCallables = new ArrayList<Future<Boolean>>();
+            do{                
+                valueStart = valueStop;
+                valueStop = valueStop + THREADS_PER_N_BLOCKS; 
+                if(horizontalStarBlockAtIndex == null){
+                    listOfCallables.add(executorService.submit(new StarBlockChainVerticalThreadPool(valueStart, valueStop)));
+                }else{
+                    listOfCallables.add(executorService.submit(new StarBlockChainHorizontalThreadPool((int)valueStart, (int)valueStop, horizontalStarBlockAtIndex)));
+                }                                   
+                                                                                    
+                threads++;                                  
+            }while(threads< threadEstimatorValue);            
+            long leftOutBlocks = totalStrength - THREADS_PER_N_BLOCKS * threadEstimatorValue;
+            if(leftOutBlocks > 0){                
+                valueStart = valueStop;
+                valueStop = valueStop + leftOutBlocks;                        
+                if(horizontalStarBlockAtIndex == null){
+                    listOfCallables.add(executorService.submit(new StarBlockChainVerticalThreadPool(valueStart, valueStop)));
+                }else{
+                    listOfCallables.add(executorService.submit(new StarBlockChainHorizontalThreadPool((int)valueStart, (int)valueStop, horizontalStarBlockAtIndex)));
+                }
+            }
+            for(Future<Boolean> futureResult : listOfCallables){    
+                //stop while loop after x time
+                while(!futureResult.isDone()){   
+                    // System.out.println("looping ");                                                                                                
+                }
+                if(futureResult.isDone())result = futureResult.get();                                                            
+                if(!result){break;}
+            }    
+        }
+        return result;
+    }                                                            
+    public boolean isStarBlockChainValid()throws Exception{
+        boolean result = false;
+        long totalVerticalStrength = Long.valueOf(versionCount.size());                                        
+        long threadEstimatorValue = threadEstimator(totalVerticalStrength);                        
+        ExecutorService executorService = Executors.newFixedThreadPool(threads(threadEstimatorValue));                             
+        result = loopChainVerification(threadEstimatorValue, totalVerticalStrength, executorService, null);
+        executorService.shutdownNow();                      
+        return result;
+    }    
 }
