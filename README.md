@@ -1,5 +1,6 @@
-# Scalable Tensor Advanced Reinforcement(STAR) BlockChain
- 
+# STAR BlockChain
+#### Scalable Tensor Advanced Reinforcement(STAR) BlockChain
+
 ### [License](http://www.apache.org/licenses/LICENSE-2.0)
 
 ```
