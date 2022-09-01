@@ -19,6 +19,9 @@ public class StarBlockChain extends StarBlock{
     private int MIN_THREADS_PARALLEL_EXECUTION = 5;
     private int MED_THREADS_PARALLEL_EXECUTION = 10;
     private int MAX_THREADS_PARALLEL_EXECUTION = 20;
+    private String VERIFICATION_TIMEOUT = "Verification timeout, try after some time!";
+    private int VERIFICATION_TIMEOUT_NUMBER = 1;
+    private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;
 
     public StarBlockChain(List<String> userNames){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
@@ -265,11 +268,13 @@ public class StarBlockChain extends StarBlock{
             }else{
                 futureResult = executorService.submit(new StarBlockChainHorizontalThreadPool((int)valueStart, (int)valueStop, horizontalStarBlockAtIndex));
             }
-            
-            while(!futureResult.isDone()){ 
-                // System.out.println("looping");
-            }//stop while loop after x time
-            if(futureResult.isDone())result = futureResult.get();
+
+            try {
+                result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
+            } catch (TimeoutException e) {
+                result = false;
+                System.out.println(VERIFICATION_TIMEOUT);
+            }            
         }else if(threadEstimatorValue > 0){                        
             long threads = 0;            
             List<Future<Boolean>> listOfCallables = new ArrayList<Future<Boolean>>();
@@ -295,11 +300,14 @@ public class StarBlockChain extends StarBlock{
                 }
             }
             for(Future<Boolean> futureResult : listOfCallables){    
-                //stop while loop after x time
-                while(!futureResult.isDone()){   
-                    // System.out.println("looping ");                                                                                                
-                }
-                if(futureResult.isDone())result = futureResult.get();                                                            
+                
+                try {
+                    result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
+                } catch (TimeoutException e) {
+                    result = false;
+                    System.out.println(VERIFICATION_TIMEOUT);
+                } 
+                                                                            
                 if(!result){break;}
             }    
         }
