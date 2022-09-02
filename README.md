@@ -16,8 +16,7 @@ Scalabale: Scales in both vertical and horizontal directions
 Sharding: Sharding makes small chunks of blockchain, which is later sent for parallel processing
 Parallel processing: It processess the small chunks of blockchain parallelly
 Encrypted: Default public
-Peer-to-Peer: Future support
-Decentralized: Future support
+Peer-to-Peer: It is decentralized and can exchange nodes or transactions without involvement of central authority
 ```
 
 ### [License](http://www.apache.org/licenses/LICENSE-2.0)
