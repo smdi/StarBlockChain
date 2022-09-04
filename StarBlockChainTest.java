@@ -8,9 +8,10 @@ public class StarBlockChainTest{
     public static void main(String []args){
 
         long startTime = System.nanoTime();
-        
-        ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
+        // String secretKey = "secrets";
+        ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran", "Khalid"));
         StarBlockChain starBlockChain = new StarBlockChain();
+        // StarBlockChain starBlockChain = new StarBlockChain(true, secretKey);
         starBlockChain.newStarBlock("Confidential data v1", userNames);
         starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
 
@@ -40,7 +41,8 @@ public class StarBlockChainTest{
             starBlockChain.newStarBlock("Data v"+i, userNames);
         }
 
-        // System.out.println(starBlockChain);
+        // System.out.println(starBlockChain.printStarBlockChain(secretKey));
+        // System.out.println(starBlockChain.printStarBlockChain());
         try{
             boolean isValid = starBlockChain.isStarBlockChainValid();
             System.out.println("Is StarBlockChain Valid? "+isValid);
@@ -50,7 +52,7 @@ public class StarBlockChainTest{
                 
         long endTime   = System.nanoTime();  
         double duration = (double)(endTime - startTime)/1000000000;      
-        System.out.println(duration);                
+        System.out.println("Verification time "+duration);                
         System.out.println("Total network strength "+starBlockChain.getTotalTensorNetworkStrength());
     }
 

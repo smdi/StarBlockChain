@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.concurrent.*;
 
-public class StarBlockChain extends StarBlock{
+public final class StarBlockChain{
         
     private LinkedHashMap<Long, ArrayList<StarBlock>> starBlocks;
     private LinkedHashMap<Long, Long> versionCount;
@@ -20,11 +20,38 @@ public class StarBlockChain extends StarBlock{
     private int MAX_THREADS_PARALLEL_EXECUTION = 20;
     private String VERIFICATION_TIMEOUT = "Verification timeout, try after some time!";
     private int VERIFICATION_TIMEOUT_NUMBER = 1;
-    private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;    
+    private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;
+    private boolean encryptBlockChain = false;
+    private String secretKey = "";
+    private String saltValue = "";    
 
     public StarBlockChain(){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
-        versionCount = new LinkedHashMap<Long, Long>();        
+        versionCount = new LinkedHashMap<Long, Long>();
+    }
+    public StarBlockChain(boolean encryptBlockChain, String secretKey, String saltValue){
+        this();
+        this.encryptBlockChain = encryptBlockChain;
+        if(this.encryptBlockChain == true){
+            setSecretKey(secretKey);
+            setSaltValue(saltValue);
+        }        
+    }
+    public StarBlockChain(boolean encryptBlockChain, String secretKey){        
+        this();
+        this.encryptBlockChain = encryptBlockChain;
+        if(this.encryptBlockChain == true){
+            setSecretKey(secretKey);
+        }
+    }
+
+    private void setSecretKey(String secretKey){        
+        this.secretKey = Security.Hash.calculateCurrentHash(secretKey);
+        Security.AES.setSecretKey(secretKey);
+    }
+    private  void setSaltValue(String saltValue){
+        this.saltValue = Security.Hash.calculateCurrentHash(saltValue);
+        Security.AES.setSaltValue(saltValue);
     }
     public void newStarBlock(String data, ArrayList<String> userNames){
         getNewStarBlockLogic(data, RELATED_FALSE, true, -1, userNames);
@@ -75,11 +102,11 @@ public class StarBlockChain extends StarBlock{
         }        
     }
     private StarBlock getNewStarBlock(String data, String horizontalPreviousHash_relatedFrom, 
-                     String verticalPreviousHash_unrelatedFrom, long  horizontalIndex, long verticalIndex, ArrayList<String> userNames){
+                     String verticalPreviousHash_unrelatedFrom, long  horizontalIndex, long verticalIndex, ArrayList<String> userNames){        
         
         return new StarBlock(System.currentTimeMillis(), horizontalPreviousHash_relatedFrom, 
                     verticalPreviousHash_unrelatedFrom, data, userNames, 
-                    horizontalIndex, verticalIndex);
+                    horizontalIndex, verticalIndex, encryptBlockChain);
     }
     private long[] getHorizontalpreviousIndexes(long index, ArrayList<StarBlock> indexedStarblocks){
         long indexes[] = new long[2];
@@ -94,11 +121,7 @@ public class StarBlockChain extends StarBlock{
     }
     private String getVerticalPreviousHash_unRelatedFrom(long index, ArrayList<StarBlock> indexedStarblocks){
         return indexedStarblocks.get(0).getCurrentHash();
-    }
-    // private String getRandoUserName(List<String> userNames){
-    //     int index = (int)(Math.random() * userNames.size());
-    //     return userNames.get(index);        
-    // }
+    }    
     private void updateVersionCode(Long index, Long count){
         versionCount.put(index, count);
     }       
@@ -108,7 +131,7 @@ public class StarBlockChain extends StarBlock{
     private void setTotalTensorNetworkStrength(long totalTensorNetworkStrength) {
         this.totalTensorNetworkStrength = totalTensorNetworkStrength;
     }
-    public String toString(){
+    private String printStarBlockChainChecked(){
         StringBuilder blockChainInfo = new StringBuilder();
         long totalVerticalStrength = Long.valueOf(versionCount.size());                
         for(long i=0; i<totalVerticalStrength; i++ ){
@@ -121,12 +144,49 @@ public class StarBlockChain extends StarBlock{
         }
         return blockChainInfo.toString();
     }
+    public String printStarBlockChain(){
+        
+        if(encryptBlockChain == false){            
+            return printStarBlockChainChecked();
+        }else{
+            return "Encrypted data, pass secretKey, saltValue(optional)!";
+        } 
+    }
+    public String toStirng(){
+        return "StarBlockChain";       
+    }
+    public String printStarBlockChain(String secretKey){
+        if(encryptBlockChain == true){
+            if(this.secretKey.equals(Security.Hash.calculateCurrentHash(secretKey))){
+                Security.AES.setSecretKey(secretKey);
+                return printStarBlockChainChecked();
+            }else{
+                return "Invalid secretkey!";
+            } 
+        }else{
+            return "Secretkey not required, data is not in encrypted format!";
+        }        
+    }
+    public String printStarBlockChain(String secretKey, String saltValue){
+        if(encryptBlockChain == true){
+            if(this.secretKey.equals(Security.Hash.calculateCurrentHash(secretKey)) 
+                && this.saltValue.equals(Security.Hash.calculateCurrentHash(saltValue))){
+                Security.AES.setSecretKey(secretKey);
+                Security.AES.setSaltValue(saltValue);
+                return printStarBlockChainChecked();
+            }else{
+                return "Invalid secretkey or saltvalue!";
+            }
+        }else{
+            return "Secretkey not required, data is not in encrypted format!";
+        }        
+    }
     private boolean checkCodeforFirstStarBlockValidity(StarBlock firstBlock, long index, 
                                                 String relatedHash, String currentHash){
         if (index != 0)return false;        
         if (relatedHash != null)return false;                            
         if (currentHash == null || 
-              !StarBlock.calculateCurrentHash(firstBlock).equals(currentHash))return false;                                             
+              !Security.Hash.calculateCurrentHash(firstBlock).equals(currentHash))return false;                                             
         return true;
     }
     private boolean isFirstStarBlockValid(StarBlock firstBlock, boolean isHorizontal) {        
@@ -153,7 +213,7 @@ public class StarBlockChain extends StarBlock{
               return false;
             }            
             if (newBlockcurrHash == null  ||  
-              !StarBlock.calculateCurrentHash(newBlock).equals(newBlockcurrHash)) {
+              !Security.Hash.calculateCurrentHash(newBlock).equals(newBlockcurrHash)) {
               return false;
             }            
             return true;

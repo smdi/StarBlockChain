@@ -1,11 +1,10 @@
 package com.aidev.starblockchain;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 // import java.sql.Date;
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
-public class StarBlock {
+public final class StarBlock{
             
     private long creationTimeStamp;
     private String currentHash;    
@@ -16,27 +15,30 @@ public class StarBlock {
     private String dataStoreImmutable;
     private StringBuilder uniqueCodeforEachUserName;    
     private String userNames = "";
-    private static String HASHING_ALGORITHM = "SHA-256";
-
-    public StarBlock(){}
+    private boolean encryptBlockChain = false;
+        
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, 
             String verticalPreviousHash_unrelatedFrom,
-            String dataStoreImmutable, ArrayList<String> userNames, long horizontalIndex, long verticalIndex) {        
-        
+            String dataStoreImmutable, ArrayList<String> userNames, 
+            long horizontalIndex, long verticalIndex, boolean encryptBlockChain){        
+
+        this.encryptBlockChain = encryptBlockChain;
         this.creationTimeStamp = creationTimeStamp;        
         this.horizontalPreviousHash_relatedFrom = horizontalPreviousHash_relatedFrom;        
         this.verticalPreviousHash_unrelatedFrom = verticalPreviousHash_unrelatedFrom;         
-        this.dataStoreImmutable = dataStoreImmutable;
-        for (String userName : userNames)
-        {
-            this.userNames += userName;
-        }        
+        this.dataStoreImmutable = (this.encryptBlockChain == true)?Security.AES.encrypt(dataStoreImmutable): dataStoreImmutable;        
+        this.userNames = (this.encryptBlockChain == true)?Security.AES.encrypt(getDelimitedString(userNames)):getDelimitedString(userNames);                
         this.horizontalIndex = horizontalIndex;
         this.verticalIndex = verticalIndex;
-        this.currentHash = StarBlock.calculateCurrentHash(this);                
-    }  
+        this.currentHash = Security.Hash.calculateCurrentHash(this);                
+    }
 
+    public String getDelimitedString(ArrayList<String> userNames){
+        StringJoiner joiner = new StringJoiner(",");
+        for (String userName : userNames)joiner.add(userName);
+        return joiner.toString();
+    }
     public long getCreationTimeStamp() {
         return creationTimeStamp;
     }    
@@ -61,42 +63,30 @@ public class StarBlock {
     public String getUserNames() {
         return userNames;
     }       
-    private String str(){
+    public String str(){
         return (""+horizontalIndex) + (""+verticalIndex) + (""+creationTimeStamp) + 
                 dataStoreImmutable + mineUniqueCodeforEachUserName(this.userNames);
     }
     public String toString(){
+        // String dataEncDecValue = (this.encryptBlockChain == true)?Security.AES.decrypt(dataStoreImmutable): dataStoreImmutable;
+        // String userNamesEncDecValue = (this.encryptBlockChain == true)?Security.AES.decrypt(userNames):userNames;
         // String starBlockInfo = String.format(
-        //                         "STARBLOCK %1$s%2$s \ndata %3$s \nuserName %4$s \ncreationTimeStamp %5$s \n"+
-        //                         "verticalPreviousHash %6$s \nhorizontalPreviousHash %7$s \n" +
-        //                         "currentHash %8$s\n",
-        //                         horizontalIndex, verticalIndex, dataStoreImmutable, userName, new Date(creationTimeStamp), 
-        //                         verticalPreviousHash_unrelatedFrom,horizontalPreviousHash_relatedFrom, 
+        //                         "{\"Tensor\" : \"%1$s%2$s\", \"data\" : \"%3$s\", \"userNames\" : \"%4$s\", "+
+        //                          "\"creationTimeStamp\" : \"%5$s\", "+
+        //                         "\"verticalPreviousHash\" : \"%6$s\", \"horizontalPreviousHash\" : \"%7$s\", " +
+        //                         "\"currentHash\" : \"%8$s\"}",
+        //                         horizontalIndex, verticalIndex, dataEncDecValue, userNamesEncDecValue, new Date(creationTimeStamp), 
+        //                         verticalPreviousHash_unrelatedFrom, horizontalPreviousHash_relatedFrom, 
         //                         currentHash);
         // String starBlockInfo = String.format(
         //     "%1$s %2$s%3$s\t",
         //     dataStoreImmutable, horizontalIndex, verticalIndex);
+        
         String starBlockInfo = String.format(
             "STARBLOCK %1$s%2$s\t",
             horizontalIndex, verticalIndex);                                        
         return starBlockInfo;
-    }
-    protected static String calculateCurrentHash(StarBlock starBlock){
-        String hash = null;
-        try {
-            MessageDigest instanceSHA256 = MessageDigest.getInstance(HASHING_ALGORITHM);
-            String textUniquetoBlock = starBlock.str();            
-            byte hashBytes[] = instanceSHA256.digest(textUniquetoBlock.getBytes());
-            StringBuilder generatedHash = new StringBuilder();
-            for (byte b : hashBytes) {
-                generatedHash.append(String.format("%02X", b));
-            }
-            hash = generatedHash.toString();            
-        } catch (NoSuchAlgorithmException e) {            
-            e.printStackTrace();
-        }  
-        return hash;
-    }    
+    }        
     private String mineUniqueCodeforEachUserName(String userNames){ 
         uniqueCodeforEachUserName = new StringBuilder();                   
         byte[] byteArrray = userNames.getBytes();
@@ -104,6 +94,5 @@ public class StarBlock {
             uniqueCodeforEachUserName.append(each);
         }                
         return uniqueCodeforEachUserName.toString();
-    } 
-    
+    }     
 }
