@@ -3,6 +3,7 @@ package com.aidev.starblockchain;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 // import java.sql.Date;
+import java.util.ArrayList;
 
 public class StarBlock {
             
@@ -14,20 +15,23 @@ public class StarBlock {
     private long verticalIndex;                      
     private String dataStoreImmutable;
     private StringBuilder uniqueCodeforEachUserName;    
-    private String userName;
+    private String userNames = "";
     private static String HASHING_ALGORITHM = "SHA-256";
 
     public StarBlock(){}
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, 
             String verticalPreviousHash_unrelatedFrom,
-            String dataStoreImmutable, String userName, long horizontalIndex, long verticalIndex) {        
+            String dataStoreImmutable, ArrayList<String> userNames, long horizontalIndex, long verticalIndex) {        
         
         this.creationTimeStamp = creationTimeStamp;        
         this.horizontalPreviousHash_relatedFrom = horizontalPreviousHash_relatedFrom;        
         this.verticalPreviousHash_unrelatedFrom = verticalPreviousHash_unrelatedFrom;         
         this.dataStoreImmutable = dataStoreImmutable;
-        this.userName = userName;
+        for (String userName : userNames)
+        {
+            this.userNames += userName;
+        }        
         this.horizontalIndex = horizontalIndex;
         this.verticalIndex = verticalIndex;
         this.currentHash = StarBlock.calculateCurrentHash(this);                
@@ -54,12 +58,12 @@ public class StarBlock {
     public String getDataStoreImmutable() {
         return dataStoreImmutable;
     }          
-    public String getUserName() {
-        return userName;
+    public String getUserNames() {
+        return userNames;
     }       
     private String str(){
         return (""+horizontalIndex) + (""+verticalIndex) + (""+creationTimeStamp) + 
-                dataStoreImmutable + mineUniqueCodeforEachUserName(this.userName);
+                dataStoreImmutable + mineUniqueCodeforEachUserName(this.userNames);
     }
     public String toString(){
         // String starBlockInfo = String.format(
@@ -93,9 +97,9 @@ public class StarBlock {
         }  
         return hash;
     }    
-    private String mineUniqueCodeforEachUserName(String userName){ 
+    private String mineUniqueCodeforEachUserName(String userNames){ 
         uniqueCodeforEachUserName = new StringBuilder();                   
-        byte[] byteArrray = userName.getBytes();
+        byte[] byteArrray = userNames.getBytes();
         for(byte each: byteArrray){
             uniqueCodeforEachUserName.append(each);
         }                

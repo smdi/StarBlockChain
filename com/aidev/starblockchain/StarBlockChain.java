@@ -8,8 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.concurrent.*;
 
 public class StarBlockChain extends StarBlock{
-    
-    private List<String> userNames;
+        
     private LinkedHashMap<Long, ArrayList<StarBlock>> starBlocks;
     private LinkedHashMap<Long, Long> versionCount;
     private long totalTensorNetworkStrength = 0;
@@ -21,38 +20,37 @@ public class StarBlockChain extends StarBlock{
     private int MAX_THREADS_PARALLEL_EXECUTION = 20;
     private String VERIFICATION_TIMEOUT = "Verification timeout, try after some time!";
     private int VERIFICATION_TIMEOUT_NUMBER = 1;
-    private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;
+    private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;    
 
-    public StarBlockChain(List<String> userNames){
+    public StarBlockChain(){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
-        versionCount = new LinkedHashMap<Long, Long>();
-        setUserNames(userNames);
+        versionCount = new LinkedHashMap<Long, Long>();        
     }
-    public void newStarBlock(String data){
-        getNewStarBlockLogic(data, RELATED_FALSE, true, -1);
+    public void newStarBlock(String data, ArrayList<String> userNames){
+        getNewStarBlockLogic(data, RELATED_FALSE, true, -1, userNames);
     }
-    public void newStarBlock(String data, boolean related){
-        getNewStarBlockLogic(data, related, true, -1);
+    public void newStarBlock(String data, boolean related, ArrayList<String> userNames){
+        getNewStarBlockLogic(data, related, true, -1, userNames);
     }       
-    public void newStarBlock(String data, boolean related, boolean currentIndex, long index){                
-        getNewStarBlockLogic(data, related, currentIndex, index);        
+    public void newStarBlock(String data, boolean related, boolean currentIndex, long index, ArrayList<String> userNames){                
+        getNewStarBlockLogic(data, related, currentIndex, index, userNames);        
     }
-    private void getNewStarBlockLogic(String data, boolean related, boolean currentIndex, long index) {
+    private void getNewStarBlockLogic(String data, boolean related, boolean currentIndex, long index, ArrayList<String> userNames) {        
         if(starBlocks.size() == 0){            
-            getNewStarBlockAtIndex(this.index, data, false, false);            
+            getNewStarBlockAtIndex(this.index, data, false, false, userNames);            
         }else{
             if(related && currentIndex){
-                getNewStarBlockAtIndex(this.index, data, true, false);
+                getNewStarBlockAtIndex(this.index, data, true, false, userNames);
             }else if(related && !(currentIndex)){
-                getNewStarBlockAtIndex(index, data, true, true);
+                getNewStarBlockAtIndex(index, data, true, true, userNames);
             }else{
                 this.index = this.index + 1;
-                getNewStarBlockAtIndex(this.index, data, false, false);
+                getNewStarBlockAtIndex(this.index, data, false, false, userNames);
             }
         }        
         setTotalTensorNetworkStrength(++totalTensorNetworkStrength);
     }
-    private void getNewStarBlockAtIndex(long index, String data, boolean addNewRelated, boolean fetchHorizontalPreviousIndex) {        
+    private void getNewStarBlockAtIndex(long index, String data, boolean addNewRelated, boolean fetchHorizontalPreviousIndex, ArrayList<String> userNames) {        
         if(addNewRelated){            
             ArrayList<StarBlock> indexedStarblocks = starBlocks.get(index);
             long horizontalIndex = this.index; long verticalIndex = Long.valueOf(indexedStarblocks.size());            
@@ -62,7 +60,7 @@ public class StarBlockChain extends StarBlock{
             }
             indexedStarblocks.add(getNewStarBlock(data, 
                 getHorizontalPreviousHash_relatedFrom(index, indexedStarblocks), 
-                null, horizontalIndex, verticalIndex));
+                null, horizontalIndex, verticalIndex, userNames));
             starBlocks.put(index, indexedStarblocks);            
             updateVersionCode(index, Long.valueOf(indexedStarblocks.size()));
         }else{
@@ -72,15 +70,15 @@ public class StarBlockChain extends StarBlock{
             }
             starBlocks.put(index, new ArrayList<>(Arrays.asList(getNewStarBlock(data,
                     null, 
-                    hash, this.index, 0))));
+                    hash, this.index, 0, userNames))));
             updateVersionCode(index, Long.valueOf(1));
         }        
     }
     private StarBlock getNewStarBlock(String data, String horizontalPreviousHash_relatedFrom, 
-                     String verticalPreviousHash_unrelatedFrom, long  horizontalIndex, long verticalIndex){
+                     String verticalPreviousHash_unrelatedFrom, long  horizontalIndex, long verticalIndex, ArrayList<String> userNames){
         
         return new StarBlock(System.currentTimeMillis(), horizontalPreviousHash_relatedFrom, 
-                    verticalPreviousHash_unrelatedFrom, data, getRandoUserName(userNames), 
+                    verticalPreviousHash_unrelatedFrom, data, userNames, 
                     horizontalIndex, verticalIndex);
     }
     private long[] getHorizontalpreviousIndexes(long index, ArrayList<StarBlock> indexedStarblocks){
@@ -97,19 +95,13 @@ public class StarBlockChain extends StarBlock{
     private String getVerticalPreviousHash_unRelatedFrom(long index, ArrayList<StarBlock> indexedStarblocks){
         return indexedStarblocks.get(0).getCurrentHash();
     }
-    private String getRandoUserName(List<String> userNames){
-        int index = (int)(Math.random() * userNames.size());
-        return userNames.get(index);        
-    }
+    // private String getRandoUserName(List<String> userNames){
+    //     int index = (int)(Math.random() * userNames.size());
+    //     return userNames.get(index);        
+    // }
     private void updateVersionCode(Long index, Long count){
         versionCount.put(index, count);
-    }
-    public List<String> getUserNames() {
-        return userNames;
-    }
-    private void setUserNames(List<String> userNames) {
-        this.userNames = new ArrayList<>(userNames);
-    }    
+    }       
     public long getTotalTensorNetworkStrength() {
         return totalTensorNetworkStrength;
     }

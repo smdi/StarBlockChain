@@ -10,23 +10,23 @@ public class StarBlockChainTest{
         long startTime = System.nanoTime();
         
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
-        StarBlockChain starBlockChain = new StarBlockChain(userNames);
-        starBlockChain.newStarBlock("Confidential data v1");
-        starBlockChain.newStarBlock("Confidential data v2", true);        
+        StarBlockChain starBlockChain = new StarBlockChain();
+        starBlockChain.newStarBlock("Confidential data v1", userNames);
+        starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
 
-        starBlockChain.newStarBlock("Music Notes v1");
-        starBlockChain.newStarBlock("Music Notes v2", true);
-        starBlockChain.newStarBlock("Music Notes v3", true);
+        starBlockChain.newStarBlock("Music Notes v1", userNames);
+        starBlockChain.newStarBlock("Music Notes v2", true, userNames);
+        starBlockChain.newStarBlock("Music Notes v3", true, userNames);
 
-        starBlockChain.newStarBlock("Confidential data v3", true, false, 0);
+        starBlockChain.newStarBlock("Confidential data v3", true, false, 0, userNames);
 
-        starBlockChain.newStarBlock("Music Notes v4", true);
+        starBlockChain.newStarBlock("Music Notes v4", true, userNames);
 
-        starBlockChain.newStarBlock("Home Loan v1");
-        starBlockChain.newStarBlock("Home Loan v2", true);
+        starBlockChain.newStarBlock("Home Loan v1", userNames);
+        starBlockChain.newStarBlock("Home Loan v2", true, userNames);
         
         for(int i=0; i<500; i++){
-            starBlockChain.newStarBlock("Home Loan v"+(3+i), true);
+            starBlockChain.newStarBlock("Home Loan v"+(3+i), true, userNames);
         }
         
         // starBlockChain.newStarBlock("Confidential data v4", true, false, 0);
@@ -37,7 +37,7 @@ public class StarBlockChainTest{
 
         // starblock chain without versioning
         for(int i=0; i<500; i++){
-            starBlockChain.newStarBlock("Data v"+i);
+            starBlockChain.newStarBlock("Data v"+i, userNames);
         }
 
         // System.out.println(starBlockChain);
