@@ -30,12 +30,11 @@ public class Security{
         public static void setHashingAlgorithm(String hashingAlgorithm){
             Hash.hashingAlgorithm = hashingAlgorithm;
         }
-
-        public static String calculateCurrentHash(StarBlock starBlock){
+        private static String calculateCurrentHash(boolean isStarBlock, StarBlock starBlock, String confidentialData){            
             String hash = null;
             try {
                 MessageDigest instanceSHA256 = MessageDigest.getInstance(hashingAlgorithm);
-                String textUniquetoBlock = starBlock.str();            
+                String textUniquetoBlock = (isStarBlock == true)?starBlock.str():confidentialData;            
                 byte hashBytes[] = instanceSHA256.digest(textUniquetoBlock.getBytes());
                 StringBuilder generatedHash = new StringBuilder();
                 for (byte b : hashBytes) {
@@ -46,22 +45,13 @@ public class Security{
                 e.printStackTrace();
             }  
             return hash;
+
         }
-        public static String calculateCurrentHash(String data){
-            String hash = null;                                  
-            try {
-                MessageDigest instanceSHA256 = MessageDigest.getInstance(hashingAlgorithm);
-                String textUniquetoBlock = data;            
-                byte hashBytes[] = instanceSHA256.digest(textUniquetoBlock.getBytes());
-                StringBuilder generatedHash = new StringBuilder();
-                for (byte b : hashBytes) {
-                    generatedHash.append(String.format("%02X", b));
-                }
-                hash = generatedHash.toString();            
-            } catch (NoSuchAlgorithmException e) {            
-                e.printStackTrace();
-            }  
-            return hash;
+        public static String calculateCurrentHash(StarBlock starBlock){
+            return calculateCurrentHash(true, starBlock, null);
+        }
+        public static String calculateCurrentHash(String confidentialData){
+            return calculateCurrentHash(false, null, confidentialData);
         }
 
     }    
