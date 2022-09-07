@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.concurrent.*;
 
-public final class StarBlockChain{
+public class StarBlockChain{
         
     private LinkedHashMap<Long, ArrayList<StarBlock>> starBlocks;
     private LinkedHashMap<Long, Long> versionCount;
@@ -17,31 +17,37 @@ public final class StarBlockChain{
     private int THREADS_PER_N_BLOCKS = 500;
     private int MIN_THREADS_PARALLEL_EXECUTION = 5;
     private int MED_THREADS_PARALLEL_EXECUTION = 10;
-    private int MAX_THREADS_PARALLEL_EXECUTION = 20;
-    private String VERIFICATION_TIMEOUT = "Verification timeout, try after some time!";
+    private int MAX_THREADS_PARALLEL_EXECUTION = 20;    
     private int VERIFICATION_TIMEOUT_NUMBER = 1;
     private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;
     private boolean encryptBlockChain = false;
+    private int encryptionMethod = Messages.NO_ENCRYPTION;
     private String secretKey = "";
-    private String saltValue = "";    
+    private String saltValue = "";        
 
     public StarBlockChain(){
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
-        versionCount = new LinkedHashMap<Long, Long>();
-    }
-    public StarBlockChain(boolean encryptBlockChain, String secretKey, String saltValue){
+        versionCount = new LinkedHashMap<Long, Long>();        
+    }        
+    public StarBlockChain(boolean encryptBlockChain, int encryptionMethod, String secretKey, String saltValue){
         this();
         this.encryptBlockChain = encryptBlockChain;
-        if(this.encryptBlockChain == true){
+        this.encryptionMethod = encryptionMethod;
+        if(encryptBlockChain == true && Messages.AES == encryptionMethod){            
             setSecretKey(secretKey);
             setSaltValue(saltValue);
+        }else if(encryptBlockChain == true && Messages.RSA == encryptionMethod){
+            System.out.println(Messages.KEYS_IN_SECRETS_FOLDER);
         }        
     }
-    public StarBlockChain(boolean encryptBlockChain, String secretKey){        
+    public StarBlockChain(boolean encryptBlockChain, int encryptionMethod, String secretKey){        
         this();
         this.encryptBlockChain = encryptBlockChain;
-        if(this.encryptBlockChain == true){
+        this.encryptionMethod = encryptionMethod;
+        if(encryptBlockChain == true && Messages.AES == encryptionMethod){            
             setSecretKey(secretKey);
+        }else if(encryptBlockChain == true && Messages.RSA == encryptionMethod){
+            System.out.println(Messages.KEYS_IN_SECRETS_FOLDER);
         }
     }
 
@@ -106,7 +112,7 @@ public final class StarBlockChain{
         
         return new StarBlock(System.currentTimeMillis(), horizontalPreviousHash_relatedFrom, 
                     verticalPreviousHash_unrelatedFrom, data, userNames, 
-                    horizontalIndex, verticalIndex, encryptBlockChain);
+                    horizontalIndex, verticalIndex, encryptBlockChain, encryptionMethod);
     }
     private long[] getHorizontalpreviousIndexes(long index, ArrayList<StarBlock> indexedStarblocks){
         long indexes[] = new long[2];
@@ -146,25 +152,28 @@ public final class StarBlockChain{
     }
     public String printStarBlockChain(){
         
-        if(encryptBlockChain == false){            
+        if(encryptBlockChain == false && encryptionMethod == Messages.NO_ENCRYPTION){            
+            return printStarBlockChainChecked();
+        }else if(encryptBlockChain == true && encryptionMethod == Messages.RSA){
+            System.out.println(Messages.PRIVATE_KEY_IN_SECRETS_FOLDER);
             return printStarBlockChainChecked();
         }else{
-            return "Encrypted data, pass secretKey, saltValue(optional)!";
+            return Messages.ENCRYPTED_PASS_KEYS;
         } 
     }
     public String toStirng(){
-        return "StarBlockChain";       
+        return Messages.BLOCKCHAIN;       
     }
     public String printStarBlockChain(String secretKey){
         if(encryptBlockChain == true){
             if(this.secretKey.equals(Security.Hash.calculateCurrentHash(secretKey))){
                 Security.AES.setSecretKey(secretKey);
                 return printStarBlockChainChecked();
-            }else{
-                return "Invalid secretkey!";
+            }else{                
+                return Messages.INVALID_SECRET_KEY;
             } 
         }else{
-            return "Secretkey not required, data is not in encrypted format!";
+            return Messages.DATA_NOT_ENCRYPTED;
         }        
     }
     public String printStarBlockChain(String secretKey, String saltValue){
@@ -175,10 +184,10 @@ public final class StarBlockChain{
                 Security.AES.setSaltValue(saltValue);
                 return printStarBlockChainChecked();
             }else{
-                return "Invalid secretkey or saltvalue!";
+                return Messages.INVALID_SECRET_KEY_SALT_KEY;
             }
         }else{
-            return "Secretkey not required, data is not in encrypted format!";
+            return Messages.DATA_NOT_ENCRYPTED;
         }        
     }
     private boolean checkCodeforFirstStarBlockValidity(StarBlock firstBlock, long index, 
@@ -325,7 +334,7 @@ public final class StarBlockChain{
                 result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
             } catch (TimeoutException e) {
                 result = false;
-                System.out.println(VERIFICATION_TIMEOUT);
+                System.out.println(Messages.VERIFICATION_TIMEOUT);
             }            
         }else if(threadEstimatorValue > 0){                        
             long threads = 0;            
@@ -357,7 +366,7 @@ public final class StarBlockChain{
                     result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
                 } catch (TimeoutException e) {
                     result = false;
-                    System.out.println(VERIFICATION_TIMEOUT);
+                    System.out.println(Messages.VERIFICATION_TIMEOUT);
                 } 
                                                                             
                 if(!result){break;}

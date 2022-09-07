@@ -30,7 +30,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;  
 import javax.crypto.NoSuchPaddingException;
 
-public final class Security{
+public class Security{
 
     static class Hash{
 
@@ -146,8 +146,7 @@ public final class Security{
             try {
                 loadData(true, PUBLIC_KEY_FILE_NAME);
                 loadData(false, PRIVATE_KEY_FILE_NAME);                
-            } catch (Exception e) {  
-                System.out.println("File not found");              
+            } catch (Exception e) {                                                
                 e.printStackTrace();
             }
         }
