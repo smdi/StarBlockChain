@@ -1,3 +1,4 @@
+import com.aidev.starblockchain.MetaData;
 import com.aidev.starblockchain.StarBlockChain;
 
 import java.util.ArrayList;
@@ -10,9 +11,9 @@ public class StarBlockChainTest{
         long startTime = System.nanoTime();
         // String secretKey = "secrets";
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
-        StarBlockChain starBlockChain = new StarBlockChain();
-        // StarBlockChain starBlockChain = new StarBlockChain(true, Messages.RSA, null);
-        // StarBlockChain starBlockChain = new StarBlockChain(true, secretKey);
+        StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES);
+        // StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA, null);
+        // StarBlockChain starBlockChain = new StarBlockChain(secretKey);
         starBlockChain.newStarBlock("Confidential data v1", userNames);
         // starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
 

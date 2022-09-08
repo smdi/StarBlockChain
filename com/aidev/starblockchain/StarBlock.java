@@ -16,7 +16,7 @@ public class StarBlock{
     private StringBuilder uniqueCodeforEachUserName;    
     private String userNames = "";
     private boolean encryptBlockChain = false;
-    private int encryptionMethod = Messages.NO_ENCRYPTION;
+    private int encryptionMethod = MetaData.NO_ENCRYPTION;
         
     public StarBlock(long creationTimeStamp,
             String horizontalPreviousHash_relatedFrom, 
@@ -29,10 +29,10 @@ public class StarBlock{
         this.creationTimeStamp = creationTimeStamp;        
         this.horizontalPreviousHash_relatedFrom = horizontalPreviousHash_relatedFrom;        
         this.verticalPreviousHash_unrelatedFrom = verticalPreviousHash_unrelatedFrom; 
-        if(encryptBlockChain == true && encryptionMethod == Messages.AES){
+        if(encryptBlockChain == true && encryptionMethod == MetaData.AES){
             this.dataStoreImmutable = Security.AES.encrypt(dataStoreImmutable);
             this.userNames = Security.AES.encrypt(getDelimitedString(userNames));
-        }else if(encryptBlockChain == true && encryptionMethod == Messages.RSA){
+        }else if(encryptBlockChain == true && encryptionMethod == MetaData.RSA){
             if(horizontalIndex == 0 && verticalIndex == 0){
                 Security.RSA.generateStoreKeyPair();
             }else{
@@ -86,10 +86,10 @@ public class StarBlock{
 
         String dataEncDecValue = dataStoreImmutable;
         String userNamesEncDecValue = userNames;
-        if(encryptBlockChain == true && encryptionMethod == Messages.AES){
+        if(encryptBlockChain == true && encryptionMethod == MetaData.AES){
             dataEncDecValue = Security.AES.decrypt(dataStoreImmutable);
             userNamesEncDecValue = Security.AES.decrypt(userNames);
-        }else if(encryptBlockChain == true && encryptionMethod == Messages.RSA){
+        }else if(encryptBlockChain == true && encryptionMethod == MetaData.RSA){
             Security.RSA.loadStoreKeyPair();
             dataEncDecValue = Security.RSA.decrypt(dataStoreImmutable);
             userNamesEncDecValue = Security.RSA.decrypt(userNames);

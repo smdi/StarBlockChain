@@ -21,7 +21,7 @@ public class StarBlockChain{
     private int VERIFICATION_TIMEOUT_NUMBER = 1;
     private TimeUnit VERIFICATION_TIMEUNIT = TimeUnit.SECONDS;
     private boolean encryptBlockChain = false;
-    private int encryptionMethod = Messages.NO_ENCRYPTION;
+    private int encryptionMethod = MetaData.NO_ENCRYPTION;
     private String secretKey = "";
     private String saltValue = "";        
 
@@ -29,36 +29,39 @@ public class StarBlockChain{
         starBlocks = new LinkedHashMap<Long, ArrayList<StarBlock>>();
         versionCount = new LinkedHashMap<Long, Long>();        
     }        
-    public StarBlockChain(boolean encryptBlockChain, int encryptionMethod, String secretKey, String saltValue){
+    public StarBlockChain(int encryptionMethod, String secretKey, String saltValue){
         this();
-        this.encryptBlockChain = encryptBlockChain;
+        encryptBlockChain = true;
         this.encryptionMethod = encryptionMethod;
-        if(encryptBlockChain == true && Messages.AES == encryptionMethod){            
-            setSecretKey(secretKey);
-            setSaltValue(saltValue);
-        }else if(encryptBlockChain == true && Messages.RSA == encryptionMethod){
-            System.out.println(Messages.KEYS_IN_SECRETS_FOLDER);
+        if(encryptBlockChain == true && MetaData.AES == encryptionMethod){            
+            Security.AES.setSecretKey(secretKey);
+            Security.AES.setSaltValue(saltValue);            
+        }else if(encryptBlockChain == true && MetaData.RSA == encryptionMethod){
+            System.out.println(MetaData.KEYS_IN_SECRETS_FOLDER);
         }        
     }
-    public StarBlockChain(boolean encryptBlockChain, int encryptionMethod, String secretKey){        
+    public StarBlockChain(int encryptionMethod, String secretKey){        
         this();
-        this.encryptBlockChain = encryptBlockChain;
+        encryptBlockChain = true;
         this.encryptionMethod = encryptionMethod;
-        if(encryptBlockChain == true && Messages.AES == encryptionMethod){            
-            setSecretKey(secretKey);
-        }else if(encryptBlockChain == true && Messages.RSA == encryptionMethod){
-            System.out.println(Messages.KEYS_IN_SECRETS_FOLDER);
+        if(encryptBlockChain == true && MetaData.AES == encryptionMethod){            
+            Security.AES.setSecretKey(secretKey);
+        }else if(encryptBlockChain == true && MetaData.RSA == encryptionMethod){
+            System.out.println(MetaData.KEYS_IN_SECRETS_FOLDER);
         }
     }
-
-    private void setSecretKey(String secretKey){        
-        this.secretKey = Security.Hash.calculateCurrentHash(secretKey);
-        Security.AES.setSecretKey(secretKey);
-    }
-    private  void setSaltValue(String saltValue){
-        this.saltValue = Security.Hash.calculateCurrentHash(saltValue);
-        Security.AES.setSaltValue(saltValue);
-    }
+    public StarBlockChain(int encryptionMethod){        
+        this();
+        encryptBlockChain = true;
+        this.encryptionMethod = encryptionMethod;
+        if(encryptBlockChain == true && MetaData.AES == encryptionMethod){            
+            System.out.println(MetaData.PASS_KEYS_FOR_AES);
+            encryptBlockChain = false; this.encryptionMethod = MetaData.NO_ENCRYPTION;
+            return ;
+        }else if(encryptBlockChain == true && MetaData.RSA == encryptionMethod){
+            System.out.println(MetaData.KEYS_IN_SECRETS_FOLDER);
+        }
+    }    
     public void newStarBlock(String data, ArrayList<String> userNames){
         getNewStarBlockLogic(data, RELATED_FALSE, true, -1, userNames);
     }
@@ -137,6 +140,10 @@ public class StarBlockChain{
     private void setTotalTensorNetworkStrength(long totalTensorNetworkStrength) {
         this.totalTensorNetworkStrength = totalTensorNetworkStrength;
     }
+    private String getRSADecrytion(){
+        System.out.println(MetaData.PRIVATE_KEY_IN_SECRETS_FOLDER);
+        return printStarBlockChainChecked();
+    }
     private String printStarBlockChainChecked(){
         StringBuilder blockChainInfo = new StringBuilder();
         long totalVerticalStrength = Long.valueOf(versionCount.size());                
@@ -152,42 +159,50 @@ public class StarBlockChain{
     }
     public String printStarBlockChain(){
         
-        if(encryptBlockChain == false && encryptionMethod == Messages.NO_ENCRYPTION){            
+        if(encryptBlockChain == false && encryptionMethod == MetaData.NO_ENCRYPTION){            
             return printStarBlockChainChecked();
-        }else if(encryptBlockChain == true && encryptionMethod == Messages.RSA){
-            System.out.println(Messages.PRIVATE_KEY_IN_SECRETS_FOLDER);
-            return printStarBlockChainChecked();
+        }else if(encryptBlockChain == true && encryptionMethod == MetaData.RSA){            
+            return getRSADecrytion();
         }else{
-            return Messages.ENCRYPTED_PASS_KEYS;
+            return MetaData.ENCRYPTED_PASS_KEYS;
         } 
     }
     public String toStirng(){
-        return Messages.BLOCKCHAIN;       
+        return MetaData.BLOCKCHAIN;       
     }
     public String printStarBlockChain(String secretKey){
-        if(encryptBlockChain == true){
+        if(encryptBlockChain == true && encryptionMethod == MetaData.AES){
+            this.secretKey = Security.AES.getSecretKey();
             if(this.secretKey.equals(Security.Hash.calculateCurrentHash(secretKey))){
                 Security.AES.setSecretKey(secretKey);
                 return printStarBlockChainChecked();
             }else{                
-                return Messages.INVALID_SECRET_KEY;
+                return MetaData.INVALID_SECRET_KEY;
             } 
+        }else if(encryptBlockChain == true && encryptionMethod == MetaData.RSA){
+            System.out.println(MetaData.RSA_FOUND);
+            return getRSADecrytion();
         }else{
-            return Messages.DATA_NOT_ENCRYPTED;
+            return MetaData.DATA_NOT_ENCRYPTED;
         }        
     }
     public String printStarBlockChain(String secretKey, String saltValue){
-        if(encryptBlockChain == true){
+        if(encryptBlockChain == true && encryptionMethod == MetaData.AES){
+            this.secretKey = Security.AES.getSecretKey(); 
+            this.saltValue = Security.AES.getSaltValue();
             if(this.secretKey.equals(Security.Hash.calculateCurrentHash(secretKey)) 
                 && this.saltValue.equals(Security.Hash.calculateCurrentHash(saltValue))){
                 Security.AES.setSecretKey(secretKey);
                 Security.AES.setSaltValue(saltValue);
                 return printStarBlockChainChecked();
             }else{
-                return Messages.INVALID_SECRET_KEY_SALT_KEY;
+                return MetaData.INVALID_SECRET_KEY_SALT_KEY;
             }
+        }else if(encryptBlockChain == true && encryptionMethod == MetaData.RSA){
+            System.out.println(MetaData.RSA_FOUND);
+            return getRSADecrytion();
         }else{
-            return Messages.DATA_NOT_ENCRYPTED;
+            return MetaData.DATA_NOT_ENCRYPTED;
         }        
     }
     private boolean checkCodeforFirstStarBlockValidity(StarBlock firstBlock, long index, 
@@ -334,7 +349,7 @@ public class StarBlockChain{
                 result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
             } catch (TimeoutException e) {
                 result = false;
-                System.out.println(Messages.VERIFICATION_TIMEOUT);
+                System.out.println(MetaData.VERIFICATION_TIMEOUT);
             }            
         }else if(threadEstimatorValue > 0){                        
             long threads = 0;            
@@ -366,7 +381,7 @@ public class StarBlockChain{
                     result = futureResult.get(VERIFICATION_TIMEOUT_NUMBER, VERIFICATION_TIMEUNIT);                    
                 } catch (TimeoutException e) {
                     result = false;
-                    System.out.println(Messages.VERIFICATION_TIMEOUT);
+                    System.out.println(MetaData.VERIFICATION_TIMEOUT);
                 } 
                                                                             
                 if(!result){break;}

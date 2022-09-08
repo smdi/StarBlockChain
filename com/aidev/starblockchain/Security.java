@@ -69,22 +69,51 @@ public class Security{
     }    
     static class AES{
 
-        private static String secretKey = "9176094515EE1ABC68FF1E325A9D646267B4BB49502D9BA215ECF852EF8CF95F";  
-        private static String saltValue = "42BCE8F62FF281D43E39D9355253F1CF5D20A7EF3D612A46B61BA88027F3E527";
+        private static String SECRET_KEY_FILE_NAME = "Secrets/secret.key";
+        private static String SALT_KEY_FILE_NAME = "Secrets/salt.key";
+        private static String secretKey = "";  
+        private static String saltValue = "";
 
         public static String getSecretKey(){
+            try{
+                loadData(true, SECRET_KEY_FILE_NAME);
+            }catch(Exception e){e.printStackTrace();}
             return secretKey;
         }        
         public static void setSecretKey(String secretKey){
-            AES.secretKey = Hash.calculateCurrentHash(secretKey);            
+            AES.secretKey = Hash.calculateCurrentHash(secretKey);  
+            try{
+                writeData(true, SECRET_KEY_FILE_NAME, AES.secretKey, null);
+            }catch(Exception e){e.printStackTrace();}          
         }
         public static String getSaltValue(){
+            try{
+                loadData(false, SALT_KEY_FILE_NAME);
+            }catch(Exception e){e.printStackTrace();}
             return saltValue;
         }
         public static void setSaltValue(String saltValue){
             AES.saltValue = Hash.calculateCurrentHash(saltValue);
+            try{
+                writeData(false, SALT_KEY_FILE_NAME, null, AES.saltValue);
+            }catch(Exception e){e.printStackTrace();}
         }
 
+        private static void loadData(boolean isSecretKey, String fileName)throws Exception{
+            File keyLoader = new File(fileName);
+            byte[] keyBytes = Files.readAllBytes(keyLoader.toPath());            
+            if(isSecretKey){                
+                secretKey = new String(keyBytes);
+            }else{                
+                saltValue = new String(keyBytes);
+            }            
+        }
+        private static void writeData(boolean isSecretKey, String fileName, String secretKey, String saltValue)throws Exception{
+            FileOutputStream file = new FileOutputStream(fileName);
+            if(isSecretKey)file.write(secretKey.getBytes());
+            else file.write(saltValue.getBytes());
+            file.close();
+        }
         public static String encrypt(String strToEncrypt){             
             try{                
                 byte[] iv = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};  
@@ -125,7 +154,7 @@ public class Security{
 
         private static PublicKey publicKey;
         private static PrivateKey privateKey;
-        private static String PUBLIC_KEY_FILE_NAME = "Secrets/public.key";
+        private static String PUBLIC_KEY_FILE_NAME = "Public/public.key";
         private static String PRIVATE_KEY_FILE_NAME = "Secrets/private.key";
         private static Cipher encryptCipher;
         private static Cipher decryptCipher;
