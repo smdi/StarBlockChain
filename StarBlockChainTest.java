@@ -9,11 +9,11 @@ public class StarBlockChainTest{
     public static void main(String []args){
 
         long startTime = System.nanoTime();
-        // String secretKey = "secrets";
+        String secretKey = "Decrets";
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
-        StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES);
-        // StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA, null);
-        // StarBlockChain starBlockChain = new StarBlockChain(secretKey);
+        // StarBlockChain starBlockChain = new StarBlockChain();
+        StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES, secretKey, "test");
+        // StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA);        
         starBlockChain.newStarBlock("Confidential data v1", userNames);
         // starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
 
@@ -25,10 +25,10 @@ public class StarBlockChainTest{
 
         // starBlockChain.newStarBlock("Music Notes v4", true, userNames);
 
-        // starBlockChain.newStarBlock("Home Loan v1", userNames);
-        // starBlockChain.newStarBlock("Home Loan v2", true, userNames);
+        starBlockChain.newStarBlock("Home Loan v1", userNames);
+        starBlockChain.newStarBlock("Home Loan v2", true, userNames);
         
-        // for(int i=0; i<500; i++){
+        // for(int i=0; i<50; i++){
         //     starBlockChain.newStarBlock("Home Loan v"+(3+i), true, userNames);
         // }
         
@@ -43,7 +43,7 @@ public class StarBlockChainTest{
         //     starBlockChain.newStarBlock("Data v"+i, userNames);
         // }
 
-        // System.out.println(starBlockChain.printStarBlockChain(secretKey));
+        // System.out.println(starBlockChain.printStarBlockChain(secretKey, "test"));         
         // System.out.println(starBlockChain.printStarBlockChain());
         try{
             boolean isValid = starBlockChain.isStarBlockChainValid();

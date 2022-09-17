@@ -32,7 +32,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class Security{
 
-    static class Hash{
+    public static class Hash{
 
         private static String hashingAlgorithm = "SHA-256";
 
@@ -67,12 +67,12 @@ public class Security{
         }
 
     }    
-    static class AES{
+    public static class AES{
 
         private static String SECRET_KEY_FILE_NAME = "Secrets/secret.key";
         private static String SALT_KEY_FILE_NAME = "Secrets/salt.key";
-        private static String secretKey = "";  
-        private static String saltValue = "";
+        private static String secretKey = "20E8CDB5B4093E18EB565F0A0C148E44DA1F0B8C5447F27C47881675BFA86C10";  
+        private static String saltValue = "42BCE8F62FF281D43E39D9355253F1CF5D20A7EF3D612A46B61BA88027F3E527";
 
         public static String getSecretKey(){
             try{
@@ -132,7 +132,7 @@ public class Security{
             }  
             return null;  
         }
-        public static String decrypt(String strToDecrypt){  
+        public static String decrypt(String strToDecrypt){             
             try{        
                 byte[] iv = {1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0};  
                 IvParameterSpec ivspec = new IvParameterSpec(iv);              
@@ -150,7 +150,7 @@ public class Security{
             return null;  
         }        
     }
-    static class RSA{
+    public static class RSA{
 
         private static PublicKey publicKey;
         private static PrivateKey privateKey;
