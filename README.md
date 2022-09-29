@@ -33,55 +33,91 @@ Peer-to-Peer: It is decentralized and can exchange nodes or
 
 ### Implementation
 
+- Public
 ```
---Public 
 StarBlockChain starBlockChain = new StarBlockChain();
+```
 
---Encrypted: AES, pass secretKey, salt(optional)
+- Encrypted: AES, pass encryption method, secretKey, salt(optional)
+```
 String secretKey = "Secret";
 String saltValue = "SimpleSalt";
 StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES, secretKey, saltValue);
+```
 
---Encrypted: RSA
---Note: Public key is generated in public folder, It is required while encryption
---Note: Private key is generated in secrets folder, keep it in a safeplace, It is required while decryption
+- Encrypted: RSA, pass encryption method
+- Note: Public key is generated in public folder, It is required while encryption
+- Note: Private key is generated in secrets folder, keep it in a safeplace, It is required while decryption
+```
 StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA);
+```
 
---Add StarBlock #00
+- List of userNames
+```
+ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Adam", "Havva"));
+```
+
+- Add StarBlock #00, pass string data, userNames
+```
 starBlockChain.newStarBlock("Confidential data v1", userNames);
---Add StarBlock #01 to previous starBlock #00
+```
+
+- Add StarBlock #01 to previous starBlock #00, pass string data, related, userNames
+- Note: This starblock will be added at the end of the current row
+```
 starBlockChain.newStarBlock("Confidential data v2", true, userNames);
+```
 
---Add StarBlock #10 at new row
+- Add StarBlock #10 at new row, pass string data, userNames
+```
 starBlockChain.newStarBlock("Transaction", userNames);
---Add StarBlock #11 to previous starBlock #10
-starBlockChain.newStarBlock("Surcharge", userNames);
+```
+- Add StarBlock #11 to previous starBlock #10, pass string data, related, userNames
+- Note: This starblock will be added at the end of the current row
+```
+starBlockChain.newStarBlock("Surcharge", true, userNames);
+```
 
---Add StarBlock #02 to starblock #01
+- Add StarBlock #02 to starblock #01, pass string data, related, currentIndex, index, userNames
+- Note: This starblock will be added at the end of the 0th row
+```
 starBlockChain.newStarBlock("Confidential data v3", true, false, 0, userNames);
+```
 
---Add StarBlock #12 to starblock #11
+- Add StarBlock #12 to starblock #11
+- Note: This starblock will be added at the end of the 1st row
+```
 starBlockChain.newStarBlock("Reward", true, false, 1, userNames);
+```
 
---Check validity of starblockchain
+- Check validity of starblockchain
+```
 boolean isValid = starBlockChain.isStarBlockChainValid();
+```
 
---Get total nodes at index
+- Get total nodes at index
+```
 System.out.println("Total newtwork strength at Index "+starBlockChain.getTotalTensorStrengthAtIndex(0));                
-
---Get total nodes of starblockchain
+```
+- Get total nodes of starblockchain
+```
 System.out.println("Total network strength "+starBlockChain.getTotalTensorNetworkStrength());
+```
 
---Print the public starblockchain
+- Print the public starblockchain
+```
 System.out.println(starBlockChain.printStarBlockChain());
+```
 
---Print the RSA encrypted starblockchain
---Note: Make sure to add private to secrets folder for decryption
+- Print the RSA encrypted starblockchain
+- Note: Make sure to add private to secrets folder for decryption
+```
 System.out.println(starBlockChain.printStarBlockChain());
+```
 
---Print the AES encrypted starblockchain
+- Print the AES encrypted starblockchain, pass encryption method, secretKey, salt(optional)
+```
 System.out.println(starBlockChain.printStarBlockChain(secretKey, saltValue));
-
 ```
 
 ### [License](http://www.apache.org/licenses/LICENSE-2.0)
