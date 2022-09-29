@@ -24,14 +24,19 @@ Peer-to-Peer: It is decentralized and can exchange nodes or
                 transactions without involvement of central authority(Future Support)
 ```
 
-### Project Dependency
+### [Project Dependency](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/0.0.2)
 
+- Maven
 ```
 <dependency>
     <groupId>io.github.smdi</groupId>
     <artifactId>StarBlockChain</artifactId>
-    <version>v0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
+```
+- Gradle
+```
+implementation 'io.github.smdi:StarBlockChain:0.0.2'
 ```
 
 ### Implementation
@@ -49,8 +54,8 @@ StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES, secretKey, salt
 ```
 
 - Encrypted: RSA, pass encryption method
-- Note: Public key is generated in public folder, It is required while encryption
-- Note: Private key is generated in secrets folder, keep it in a safeplace, It is required while decryption
+- Note: Public key will be generated, It is required while encryption
+- Note: Private key will be generated, keep it in a safeplace, It is required while decryption
 ```
 StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA);
 ```
@@ -113,7 +118,7 @@ System.out.println(starBlockChain.printStarBlockChain());
 ```
 
 - Print the RSA encrypted starblockchain
-- Note: Make sure to add private to secrets folder for decryption
+- Note: Make sure to add private key for decryption
 ```
 System.out.println(starBlockChain.printStarBlockChain());
 ```
