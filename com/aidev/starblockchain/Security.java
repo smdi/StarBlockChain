@@ -69,8 +69,8 @@ public class Security{
     }    
     public static class AES{
 
-        private static String SECRET_KEY_FILE_NAME = "Secrets/secret.key";
-        private static String SALT_KEY_FILE_NAME = "Secrets/salt.key";
+        private static String SECRET_KEY_FILE_NAME = "com/aidev/starblockchain/secret.key";
+        private static String SALT_KEY_FILE_NAME = "com/aidev/starblockchain/salt.key";
         private static String secretKey = "20E8CDB5B4093E18EB565F0A0C148E44DA1F0B8C5447F27C47881675BFA86C10";  
         private static String saltValue = "42BCE8F62FF281D43E39D9355253F1CF5D20A7EF3D612A46B61BA88027F3E527";
 
@@ -154,8 +154,8 @@ public class Security{
 
         private static PublicKey publicKey;
         private static PrivateKey privateKey;
-        private static String PUBLIC_KEY_FILE_NAME = "Public/public.key";
-        private static String PRIVATE_KEY_FILE_NAME = "Secrets/private.key";
+        private static String PUBLIC_KEY_FILE_NAME = "com/aidev/starblockchain/public.key";
+        private static String PRIVATE_KEY_FILE_NAME = "com/aidev/starblockchain/private.key";
         private static Cipher encryptCipher;
         private static Cipher decryptCipher;
         

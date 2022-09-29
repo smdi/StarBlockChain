@@ -193,6 +193,14 @@ public class StarBlockChain{
         }catch(Exception e){
             e.printStackTrace();
         }
+    }
+    public long getTotalTensorStrengthAtIndex(int index) {
+        try{
+            return versionCount.get(index);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return 0;
     }       
     public long getTotalTensorNetworkStrength() {
         try{

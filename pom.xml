@@ -7,11 +7,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 <groupId>io.github.smdi</groupId>  
 <artifactId>StarBlockChain</artifactId>  
-<version>v0.0.1</version>  
+<version>0.0.2</version>  
 <packaging>jar</packaging>  
   
 <build>
-    <plugins>
+      <sourceDirectory>${basedir}</sourceDirectory>
+      <scriptSourceDirectory>${basedir}/com/aidev/starblockchain</scriptSourceDirectory>       
+      <outputDirectory>${basedir}/target/classes</outputDirectory>      
+      <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
@@ -120,13 +123,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <groupId>org.apache.maven.shared</groupId>
     <artifactId>maven-filtering</artifactId>
     <version>1.3</version>
-  </dependency>
-  <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-  </dependency>
+  </dependency>  
 </dependencies>
  
 </project>  

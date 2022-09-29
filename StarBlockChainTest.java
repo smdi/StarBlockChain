@@ -9,13 +9,15 @@ public class StarBlockChainTest{
     public static void main(String []args){
 
         long startTime = System.nanoTime();
-        String secretKey = "Decrets";
+        String secretKey = "Secret";
+        String saltValue = "SimpleSalt";
+
         ArrayList<String> userNames = new ArrayList<>(Arrays.asList("Imran"));
         // StarBlockChain starBlockChain = new StarBlockChain();
-        StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES, secretKey, "test");
+        StarBlockChain starBlockChain = new StarBlockChain(MetaData.AES, secretKey, saltValue);
         // StarBlockChain starBlockChain = new StarBlockChain(MetaData.RSA);        
         starBlockChain.newStarBlock("Confidential data v1", userNames);
-        // starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
+        starBlockChain.newStarBlock("Confidential data v2", true, userNames);        
 
         // starBlockChain.newStarBlock("Music Notes v1", userNames);
         // starBlockChain.newStarBlock("Music Notes v2", true, userNames);
@@ -43,8 +45,8 @@ public class StarBlockChainTest{
         //     starBlockChain.newStarBlock("Data v"+i, userNames);
         // }
 
-        // System.out.println(starBlockChain.printStarBlockChain(secretKey, "test"));         
-        // System.out.println(starBlockChain.printStarBlockChain());
+        // System.out.println(starBlockChain.printStarBlockChain(secretKey, saltValue));         
+        System.out.println(starBlockChain.printStarBlockChain());
         try{
             boolean isValid = starBlockChain.isStarBlockChainValid();
             System.out.println("Is StarBlockChain Valid? "+isValid);
@@ -54,7 +56,8 @@ public class StarBlockChainTest{
                 
         long endTime   = System.nanoTime();  
         double duration = (double)(endTime - startTime)/1000000000;      
-        System.out.println("Verification time "+duration);                
+        System.out.println("Verification time "+duration);
+        System.out.println("Total newtwork strength at Index "+starBlockChain.getTotalTensorStrengthAtIndex(0));                
         System.out.println("Total network strength "+starBlockChain.getTotalTensorNetworkStrength());
     }
 
