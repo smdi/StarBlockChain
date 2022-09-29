@@ -7,7 +7,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 <groupId>io.github.smdi</groupId>  
 <artifactId>StarBlockChain</artifactId>  
-<version>0.0.3</version>  
+<version>1.0.0</version>  
 <packaging>jar</packaging>  
   
 <build>
