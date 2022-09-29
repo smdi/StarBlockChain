@@ -189,12 +189,12 @@ public class StarBlockChain{
     }    
     private void updateVersionCode(Long index, Long count){
         try{
-            versionCount.put(index, count);
+            versionCount.put(index, count);            
         }catch(Exception e){
             e.printStackTrace();
         }
     }
-    public long getTotalTensorStrengthAtIndex(int index) {
+    public long getTotalTensorNetworkStrengthAtIndex(Long index) {
         try{
             return versionCount.get(index);
         }catch(Exception e){

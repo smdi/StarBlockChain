@@ -46,7 +46,7 @@ public class StarBlockChainTest{
         // }
 
         // System.out.println(starBlockChain.printStarBlockChain(secretKey, saltValue));         
-        System.out.println(starBlockChain.printStarBlockChain());
+        // System.out.println(starBlockChain.printStarBlockChain());
         try{
             boolean isValid = starBlockChain.isStarBlockChainValid();
             System.out.println("Is StarBlockChain Valid? "+isValid);
@@ -57,7 +57,7 @@ public class StarBlockChainTest{
         long endTime   = System.nanoTime();  
         double duration = (double)(endTime - startTime)/1000000000;      
         System.out.println("Verification time "+duration);
-        System.out.println("Total newtwork strength at Index "+starBlockChain.getTotalTensorStrengthAtIndex(0));                
+        System.out.println("Total newtwork strength at Index "+starBlockChain.getTotalTensorNetworkStrengthAtIndex(0L));                
         System.out.println("Total network strength "+starBlockChain.getTotalTensorNetworkStrength());
     }
 
