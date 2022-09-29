@@ -5,7 +5,7 @@
 
 ## Hey there👋, I have designed this new concept of blockchain, that can scale in both vertical and horizontal directions, It believes in grouping related nodes or transactions together
 
-![starblockchain](https://user-images.githubusercontent.com/30797411/187959296-a2d6b56a-da5d-4fd3-9208-064196443ddf.png)
+![STAR Blockchain Dashnoard](https://user-images.githubusercontent.com/30797411/193087285-7ff20e6f-81ef-4ede-95dc-b2e34f801b3c.png)
 
 ### Features
 
