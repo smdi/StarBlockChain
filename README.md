@@ -24,7 +24,7 @@ Peer-to-Peer: It is decentralized and can exchange nodes or
                 transactions without involvement of central authority(Future Support)
 ```
 
-### [Project Dependency](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/0.0.2)
+### [Project Dependency](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/1.0.0)
 
 - Maven
 ```
