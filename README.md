@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser/badge.svg)](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/0.0.2/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser/badge.svg)](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/1.0.0/)
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/apache/maven.svg?label=License)](https://github.com/smdi/StarBlockChain/blob/main/LICENSE)
 
 # Scalable Tensor Advanced Reinforcement(STAR) BlockChain
@@ -31,12 +31,12 @@ Peer-to-Peer: It is decentralized and can exchange nodes or
 <dependency>
     <groupId>io.github.smdi</groupId>
     <artifactId>StarBlockChain</artifactId>
-    <version>0.0.2</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 - Gradle
 ```
-implementation 'io.github.smdi:StarBlockChain:0.0.2'
+implementation 'io.github.smdi:StarBlockChain:1.0.0'
 ```
 
 ### Implementation
