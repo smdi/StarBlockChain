@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/maven-central/v/org.apache.maven/apache-maven.svg?label=Maven%20Central)](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/v0.0.1/overview)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/cz.jirutka.rsql/rsql-parser/badge.svg)](https://central.sonatype.dev/artifact/io.github.smdi/StarBlockChain/0.0.2/)
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/apache/maven.svg?label=License)](https://github.com/smdi/StarBlockChain/blob/main/LICENSE)
 
 # Scalable Tensor Advanced Reinforcement(STAR) BlockChain
